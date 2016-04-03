@@ -1,13 +1,17 @@
 <template name="helpPage">
-<div class="modal fade">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <p class="text-center modal-title">{{page.title}}</p>
-      </div>
-      <div class="modal-body">
-        <p>{{page.content}}</p>
+<div class="container">
+  <div class="col-sm-4 col-md-8 col-lg-10">
+    <div class="modal fade ">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <p class="text-center modal-title">{{page.title}}</p>
+          </div>
+          <div class="modal-body">
+            <p>{{page.content}}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -1,0 +1,75 @@
+<template name="playgame">
+<div class="container">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <h5 class="pull-left">{{current.position}}</h5>
+          <h5 class="pull-right">{{game.team}}</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6 col-md-6 col-lg-6">
+      <p class="text-center"><button class="btn btn-default">Current</button></p>
+      <ul class="list-group">
+        <li class="list-group-item">Week <span class="badge pull-right">{{game.week}}</span></li>
+        <li class="list-group-item">Incoming delivery <span class="badge pull-right">{{current.thisWeek.incomingDelivery}}</span></li>
+        <li class="list-group-item">Incoming order <span class="badge pull-right">{{current.thisWeek.incomingOrder}}</span></li>
+        <li class="list-group-item">Inventory <span class="badge pull-right">{{current.thisWeek.inventory}}</span></li>
+      </ul>
+    </div>
+    <div class="col-sm-6 col-md-6 col-lg-6">
+      <p class="text-center"><button class="btn btn-default"> Time remaining <span class="badge">{{timeRemaining}}</span></button></p>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <form class="form-horizontal orderOfThisWeek">
+            <div class="form-group">
+              <label for="outOrder" class="col-xs-8 col-sm-4 col-md-6 control-label">Your order</label>
+              <div class="col-xs-4 col-sm-6 col-md-6 pull-right">
+                <input type="number" class="form-control" id="outOrder" name="outOrder" min=0 value=0 max={{current.thisWeek.inventory}}>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="text-center">
+                <button type="submit" class="btn btn-default">Submit</button>
+              </div>
+            </div>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-12 col-md-12 col-lg-12 table-responsive">
+      <table class="table table-striped table-bordered">
+        <thead>
+          <th>Week</th>
+          <th>Incoming delivery</th>
+          <th>Inventory</th>
+          <th>Outgoing Order</th>
+          <th>Backorder</th>
+          <th>To Ship</th>
+          <th>Your order</th>
+          <th>Cost</th>
+        </thead>
+        <tbody>
+          {{#each current.log}}
+          <tr>
+            <td>{{this.week}}</td>
+            <td>{{this.incomingDelivery}}</td>
+            <td>{{this.inventory}}</td>
+            <td>{{this.incomingOrder}}</td>
+            <td>{{this.backorder}}</td>
+            <td>{{this.toShip}}</td>
+            <td>{{this.order}}</td>
+            <td>{{this.cost}}</td>
+          </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+</template>

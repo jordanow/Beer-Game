@@ -1,8 +1,13 @@
 <template name="index">
-  <div class="jumbotron text-center" style="padding: 20px;">
-    <h2>Base</h2>
-    <p>A starting point for Meteor applications.</p>
-    <p><a class="btn btn-success" href="http://themeteorchef.com/base" role="button">Read the Documentation</a></p>
-    <p style="font-size: 16px; color: #aaa;">Currently at v3.4.0</p>
-  </div>
+<div class="jumbotron text-center" style="padding: 20px;">
+  <a type="button" class="btn btn-default btn-lg btn-block" href={{pathFor 'joingame'}}>
+      <i class="fa fa-play-circle-o fa-lg pull-left"></i> Join game
+  </a>
+  <a type="button" class="btn btn-default btn-lg btn-block modal-toggle" name="game-rules">
+      <i class="fa fa-question fa-lg pull-left"></i> Game rules
+  </a>
+  <a type="button" class="btn btn-default btn-lg btn-block modal-toggle" name="about">
+      <i class="fa fa-file-text fa-lg pull-left"></i> About
+  </a>
+</div>
 </template>
