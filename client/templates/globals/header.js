@@ -1,7 +1,6 @@
 Template.header.helpers({
   brandLink() {
-    let login = FlowRouter.path('login'),
-      index = FlowRouter.path('index');
+    return FlowRouter.path('index');
   }
 });
 

@@ -1,9 +1,9 @@
 <template name="publicNavigation">
   <ul class="nav navbar-nav">
-    <li class="{{currentRoute 'index'}}"><a href="{{pathFor 'index'}}">Index</a></li>
+    <li class="{{currentRoute 'index'}} collapseOnClick"><a href="{{pathFor 'index'}}">Index</a></li>
   </ul>
   <ul class="nav navbar-nav navbar-right">
-    <li class="{{currentRoute 'login'}}"><a href="{{pathFor 'login'}}">Login</a></li>
-    <li class="{{currentRoute 'signup'}}"><a href="{{pathFor 'signup'}}">Sign Up</a></li>
+    <li class="{{currentRoute 'login'}} collapseOnClick"><a href="{{pathFor 'login'}}">Login</a></li>
+    <li class="{{currentRoute 'signup'}} collapseOnClick"><a href="{{pathFor 'signup'}}">Sign Up</a></li>
   </ul>
 </template>
