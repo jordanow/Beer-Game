@@ -1,12 +1,21 @@
 const authenticatedRoutes = FlowRouter.group({
-  name: 'authenticated'
+  name: 'admin'
 });
 
 authenticatedRoutes.route('/dashboard', {
-  name: 'dashboard',
+  name: 'Dashboard',
   action() {
     BlazeLayout.render('default', {
       yield: 'dashboard'
+    });
+  }
+});
+
+authenticatedRoutes.route('/dashboard/pages/:slug', {
+  name: 'Help page - About',
+  action() {
+    BlazeLayout.render('default', {
+      yield: 'adminEditPage'
     });
   }
 });
