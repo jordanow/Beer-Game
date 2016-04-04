@@ -9,10 +9,19 @@ Meteor.methods({
     //Check if this position is available
     //If true, assign the position to this person
     //return success
-    if (checkGameKey) {
+    if (isValidGameKey(options.key)) {
+      let gameInstance = getGameInstance(options.key);
+      let newPlayer = {
+        role: options.position,
+        game: {
+          instance: gameInstance._id,
+          session: gameInstance.session
+        }
+      };
+      let player = Game.players.insert(newPlayer);
       return {
-        success: true,
-        gamekey: options.key
+        success: player,
+        gamekey: gameInstance.key
       };
     } else {
       return {
@@ -28,18 +37,50 @@ Meteor.methods({
 
     return true;
   },
-  checkGameKey: function(key) {
+  isValidGameKey: function(key) {
     check(key, String);
+    if (key) {
 
-    return {
-      success: checkGameKey(key)
-    };
+      return {
+        success: isValidGameKey(key)
+      };
+    } else {
+      return {
+        success: false
+      };
+    }
   },
   createGames: function(options) {
+    //Check if the session exists
+    //If yes, create new games with same session id
+    //else throw error
     check(options, {
-      session: String,
+      session: Number,
       numOfGames: Number
     });
+
+    let sessionId = null;
+    if (!isNaN(options.session)) {
+      let session = Game.sessions.findOne({
+        number: options.session
+      });
+
+      if (!session || !session._id) {
+        throw new Meteor.Error(400, 'Session not found!');
+      }
+      sessionId = session._id;
+    } else {
+      let settings = Game.settings.findOne();
+      sessionId = Game.sessions.insert({
+        settings: settings
+      });
+    }
+
+    for (let i = 0; i < options.numOfGames; i++) {
+      Game.instances.insert({
+        session: sessionId
+      });
+    }
 
     return {
       success: true
@@ -55,6 +96,16 @@ Meteor.methods({
   }
 });
 
-let checkGameKey = function(key) {
-  return true;
+let getGameInstance = function(key) {
+  return Game.instances.findOne({
+    key: Number(key)
+  });
+};
+
+let isValidGameKey = function(key) {
+  let count = Game.instances.find({
+    key: Number(key)
+  }).count();
+
+  return count === 1;
 };
