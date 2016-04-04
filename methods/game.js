@@ -34,6 +34,24 @@ Meteor.methods({
     return {
       success: checkGameKey(key)
     };
+  },
+  createGames: function(options) {
+    check(options, {
+      session: String,
+      numOfGames: Number
+    });
+
+    return {
+      success: true
+    };
+  },
+  updateGameSettings: function(doc, docId) {
+    check(doc, Object);
+    check(docId, String);
+
+    return Game.settings.update({
+      _id: docId
+    }, doc);
   }
 });
 

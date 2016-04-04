@@ -8,11 +8,20 @@
 </Template>
 
 <template name="adminEditPage">
-<div class="row">
-  <div class="col-sm-8">
-    {{#autoForm id="adminEditPage" type="method-update" meteormethod="updatePage" doc=page collection="Pages"}}
-    {{> pageForm }}
-    {{/autoForm}}
+<div class="container">
+  <div class="row">
+    <ul class="nav nav-tabs">
+      <li role="presentation"><a href="{{pathFor 'dashboardOverview'}}">Overview</a></li>
+      <li role="presentation" class="active"><a href="{{pathFor 'dashboardSettings'}}">Settings</a></li>
+    </ul>
+  </div>
+  <div class="row">
+    <br/>
+    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
+      {{#autoForm id="adminEditPage" type="method-update" meteormethod="updatePage" doc=page collection="Pages"}}
+      {{> pageForm }}
+      {{/autoForm}}
+    </div>
   </div>
 </div>
 </template>

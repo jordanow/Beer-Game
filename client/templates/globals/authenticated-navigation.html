@@ -1,7 +1,7 @@
 <template name="authenticatedNavigation">
   <ul class="nav navbar-nav">
     <li class="{{currentRoute 'index'}} collapseOnClick"><a href="{{pathFor 'index'}}">Index</a></li>
-    <li class="{{currentRoute 'dashboard'}} collapseOnClick"><a href="{{pathFor 'Dashboard'}}">Dashboard</a></li>
+    <li class="{{currentRouteContains 'admin'}} collapseOnClick"><a href="{{pathFor 'dashboardOverview'}}">Dashboard</a></li>
   </ul>
   <ul class="nav navbar-nav navbar-right">
     <li class="dropdown">

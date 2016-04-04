@@ -51,7 +51,9 @@ Pages.attachSchema(new SimpleSchema({
       class: 'editor',
       settings: {
         toolbar: [
-          ['style', ['bold', 'italic', 'underline', 'clear']]
+          ['style', ['bold', 'italic', 'underline', 'clear']],
+          ['fontsize', ['fontsize']],
+          ['para', ['ul', 'ol', 'paragraph']]
         ]
       }
     }
