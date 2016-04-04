@@ -16,13 +16,50 @@ Meteor.methods({
         game: {
           instance: gameInstance._id,
           session: gameInstance.session
-        }
+        },
+        number: ''
       };
       let player = Game.players.insert(newPlayer);
       return {
         success: player,
         gamekey: gameInstance.key
       };
+    } else {
+      return {
+        success: false,
+        message: 'The provided key is incorrect'
+      };
+    }
+  },
+  continuegame: function(options) {
+    check(options, {
+      gamekey: String,
+      playerkey: String
+    });
+
+    //Check if the game key is valid
+    //Check if this position is available
+    //If true, assign the position to this person
+    //return success
+    if (isValidGameKey(options.gamekey)) {
+      let gameInstance = getGameInstance(options.gamekey);
+
+      let player = Game.players.findOne({
+        number: Number(options.playerkey),
+        game: {
+          instance: gameInstance._id,
+          session: gameInstance.session
+        }
+      });
+
+      if (!!player) {
+        return {
+          success: player,
+          gamekey: gameInstance.key
+        };
+      } else {
+        throw new Meteor.Error(400, 'Player key not found');
+      }
     } else {
       return {
         success: false,

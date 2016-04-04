@@ -16,9 +16,8 @@ let schema = new SimpleSchema({
   number: {
     type: Number,
     autoValue: function() {
-      console.log(this);
       if (this.isInsert) {
-        return incrementCounter("playerKey", "number");
+        return incrementCounter("playerkey", "number");
       }
     }
   },
@@ -34,4 +33,4 @@ let schema = new SimpleSchema({
   }
 });
 
-Game.instances.attachSchema(schema);
+Game.players.attachSchema(schema);

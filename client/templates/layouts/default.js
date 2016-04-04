@@ -19,11 +19,11 @@ Template.default.helpers({
         'signup',
         'recover-password',
         'reset-password'
-      ], '/dashboard');
+      ], '/admin/overview');
     },
     redirectPublic() {
       return handleRedirect([
-        'dashboard'
+        'dashboardOverview'
       ], '/login');
     }
 });

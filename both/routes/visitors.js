@@ -20,6 +20,15 @@ visitorRoutes.route('/game/join', {
   }
 });
 
+visitorRoutes.route('/game/continue', {
+  name: 'continuegame',
+  action() {
+    BlazeLayout.render('default', {
+      yield: 'continuegame'
+    });
+  }
+});
+
 visitorRoutes.route('/game/:key', {
   name: 'playgame',
   action() {
