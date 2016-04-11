@@ -9,18 +9,10 @@
   <div class="row">
     <br/>
     <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
-      <button type="button" class="btn btn-default modal-create-games">
-      <i class="fa fa-plus fa-lg"></i> Create games
-      </button>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
+      {{#if Template.subscriptionsReady}}
       {{#autoForm id="gameSettings" type="method-update" meteormethod="updateGameSettings" doc=settings collection="Game.settings"}}
-      {{> afQuickField name="cost.beer" }}
       {{> afQuickField name="cost.inventory" }}
       {{> afQuickField name="cost.backlog" }}
-      {{> afQuickField name="maxfactoryoutput" }}
       {{> afQuickField name="delay" }}
       {{> afQuickField name="customerdemand" }}
       <div>
@@ -28,6 +20,9 @@
         <button type="reset" class="btn btn-default" disabled="{{disableButtons}}">Reset changes</button>
       </div>
       {{/autoForm}}
+      {{else}}
+      {{>loading}}
+      {{/if}}
     </div>
   </div>
   <div class="row">

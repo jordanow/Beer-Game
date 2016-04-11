@@ -8,7 +8,7 @@ Template.playgame.onCreated(function() {
     remaining -= 1;
     self.timeRemaining.set(remaining);
 
-    if (remaining < -1) {
+    if (remaining <= 0) {
       Meteor.clearInterval(self.interval);
     }
   }, 1000);

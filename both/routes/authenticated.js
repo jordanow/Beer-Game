@@ -28,6 +28,15 @@ authenticatedRoutes.route('/settings', {
   }
 });
 
+authenticatedRoutes.route('/sessions/:sessionNumber', {
+  name: 'sessionOverview',
+  action() {
+    BlazeLayout.render('default', {
+      yield: 'sessionOverview'
+    });
+  }
+});
+
 authenticatedRoutes.route('/pages/:slug', {
   name: 'help-page',
   action() {

@@ -1,10 +1,12 @@
 Template.createGames.onCreated(function() {
-  Meteor.subscribe('Game.sessions');
+  this.subscribe = Meteor.subscribe('Game.sessions', FlowRouter.getParam('sessionNumber'));
 });
 
 Template.createGames.helpers({
-  sessions: function() {
-    return Game.sessions.find();
+  session: function() {
+    return Game.sessions.findOne({
+      number: Number(FlowRouter.getParam('sessionNumber'))
+    });
   }
 });
 
@@ -14,7 +16,7 @@ Template.createGames.events({
 
     let options = {
       numOfGames: Number(e.target.numOfGames.value),
-      session: Number(e.target.gameSession.value)
+      session: Number(FlowRouter.getParam('sessionNumber'))
     };
 
     Meteor.call('createGames', options, function(err, res) {

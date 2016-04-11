@@ -7,7 +7,7 @@
           <div class="modal-body">
             <div class="panel panel-default">
               <div class="panel-body">
-                Please enter the number of games you want to create
+                <h5>Session {{session.number}}</h5> Please enter the number of games you want to create
               </div>
             </div>
             <div class="panel panel-default">
@@ -21,23 +21,15 @@
                       </div>
                     </div>
                     <div class="form-group">
-                      <label for="gameSession" class="col-xs-4 col-sm-6 control-label">Choose session</label>
-                      <div class="col-xs-8 col-sm-6 col-md-6">
-                        <select name="gameSession" class="form-control" required>
-                          <option value="null">Create new session</option>
-                          {{#each sessions}}
-                            <option value="{{this.number}}">{{this.number}}</option>
-                          {{/each}}
-                        </select>
-                      </div>
-                    </div>
-                    <div class="form-group">
                       <div class="text-center">
                         <button type="submit" class="btn btn-default">Create</button>
                       </div>
                     </div>
                   </form>
                 </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
               </div>
             </div>
           </div>

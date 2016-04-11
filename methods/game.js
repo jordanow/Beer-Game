@@ -1,4 +1,10 @@
 Meteor.methods({
+  addSession: function() {
+    let settings = Game.settings.findOne();
+    return Game.sessions.insert({
+      settings: settings
+    });
+  },
   joingame: function(options) {
     check(options, {
       key: String,
@@ -87,6 +93,24 @@ Meteor.methods({
       };
     }
   },
+  isValidPlayerKey: function(options) {
+    check(options, Object);
+    let gameInstance = Game.instances.findOne({
+      key: Number(options.gamekey)
+    });
+    let player = {};
+
+    if (!!gameInstance && gameInstance._id) {
+      player = Game.players.findOne({
+        'game.instance': gameInstance._id,
+        number: Number(options.playerkey)
+      });
+    }
+
+    return {
+      success: player && player._id
+    };
+  },
   createGames: function(options) {
     //Check if the session exists
     //If yes, create new games with same session id
@@ -96,38 +120,38 @@ Meteor.methods({
       numOfGames: Number
     });
 
-    let sessionId = null;
-    if (!isNaN(options.session)) {
-      let session = Game.sessions.findOne({
-        number: options.session
-      });
+    let session = Game.sessions.findOne({
+      number: options.session
+    });
 
-      if (!session || !session._id) {
-        throw new Meteor.Error(400, 'Session not found!');
+    if (session && session._id) {
+      for (let i = 0; i < options.numOfGames; i++) {
+        Game.instances.insert({
+          session: session._id
+        });
       }
-      sessionId = session._id;
+      return {
+        success: true
+      };
     } else {
-      let settings = Game.settings.findOne();
-      sessionId = Game.sessions.insert({
-        settings: settings
-      });
+      throw new Meteor.Error(400, 'Session not found');
     }
 
-    for (let i = 0; i < options.numOfGames; i++) {
-      Game.instances.insert({
-        session: sessionId
-      });
-    }
 
-    return {
-      success: true
-    };
   },
   updateGameSettings: function(doc, docId) {
     check(doc, Object);
     check(docId, String);
 
     return Game.settings.update({
+      _id: docId
+    }, doc);
+  },
+  updateSessionSettings: function(doc, docId) {
+    check(doc, Object);
+    check(docId, String);
+
+    return Game.sessions.update({
       _id: docId
     }, doc);
   }

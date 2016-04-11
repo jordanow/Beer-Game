@@ -23,6 +23,28 @@ Template.continuegame.events({
       }
     });
   },
+  'focusout .playerkeyselect': function(e, tpl) {
+    e.preventDefault();
+    let playerkey = e.target.value;
+    let gamekey = $("#gamekey").val();
+
+    Meteor.call('isValidPlayerKey', {
+      playerkey,
+      gamekey
+    }, function(err, res) {
+
+      if (err) {
+        Bert.alert(err.message, 'danger');
+      } else if (!res.success) {
+        $("#playerkeybox").addClass('has-error');
+        $("#submitBtn").attr('disabled', true);
+      } else {
+        $("#playerkeybox").removeClass('has-error');
+        $("#playerkeybox").addClass('has-success');
+        $("#submitBtn").attr('disabled', false);
+      }
+    });
+  },
   'submit form.continuegame': function(e) {
     e.preventDefault();
     let options = {

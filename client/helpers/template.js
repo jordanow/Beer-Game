@@ -7,3 +7,7 @@ Bert.defaults = {
   type: 'default'
     // Accepts: default, success, info, warning, danger.
 };
+
+Template.registerHelper('formatDate', function(time) {
+  return moment(time).format('LL');
+});

@@ -49,14 +49,6 @@ let roleOrders = new SimpleSchema({
 });
 
 let schema = new SimpleSchema({
-  team: {
-    type: Number,
-    autoValue: function() {
-      if (this.isInsert) {
-        return incrementCounter("teamNumber", "number");
-      }
-    }
-  },
   key: {
     type: Number,
     autoValue: function() {

@@ -7,6 +7,24 @@
     </ul>
   </div>
   <div class="row">
+    <br/>
+    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
+      <button type="button" class="btn btn-default add-session">
+      <i class="fa fa-plus fa-lg"></i> Add Session
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
+      {{#if pageLoading}}
+      {{>loading}}
+      {{/if}}
+      <div class="list-group">
+        {{#each sessions}}
+        <a type="button" class="list-group-item" href="/admin/sessions/{{this.number}}"><i class="fa fa-chevron-right"></i>  Session {{this.number}} <span class="pull-right"> Created {{formatDate this.createdAt}}</span></a>
+        {{/each}}
+      </div>
+    </div>
   </div>
 </div>
 </template>

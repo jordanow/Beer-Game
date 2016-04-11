@@ -1,0 +1,42 @@
+<template name="sessionSettings">
+<div class="container">
+  <div class="col-sm-4 col-md-8 col-lg-10">
+    <div class="modal fade ">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <h5>Edit session {{session.number}}  settings</h5>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-2 col-md-8 col-lg-8">
+                  {{#if Template.subscriptionsReady}}
+                  {{#autoForm id="sessionSettings" type="method-update" meteormethod="updateSessionSettings" doc=session collection="Game.sessions"}}
+                  {{> afQuickField name="settings.cost.inventory" }}
+                  {{> afQuickField name="settings.cost.backlog" }}
+                  {{> afQuickField name="settings.delay" }}
+                  {{> afQuickField name="settings.customerdemand" }}
+                  <div>
+                    <button type="submit" class="btn btn-primary" disabled="{{disableButtons}}">Submit</button>
+                    <button type="reset" class="btn btn-default" disabled="{{disableButtons}}">Reset changes</button>
+                  </div>
+                  {{/autoForm}}
+                  {{else}}
+                  {{>loading}}
+                  {{/if}}
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>

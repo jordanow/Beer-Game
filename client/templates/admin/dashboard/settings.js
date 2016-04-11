@@ -1,31 +1,10 @@
 Template.dashboardSettings.onCreated(function() {
-  Template.instance().subscribe('Game.settings');
+  Template.instance().subscription = Template.instance().subscribe('Game.settings');
 });
 
 Template.dashboardSettings.helpers({
   settings: function() {
     return Game.settings.findOne();
-  }
-});
-
-Template.dashboardSettings.events({
-  'click .modal-create-games': function(e) {
-    e.preventDefault();
-    Modal.show('createGames');
-  },
-  'submit .adminSettingsForm': function(e) {
-    e.preventDefault();
-
-    let target = e.target;
-    let options = {
-      inventorycost: target.inventorycost.value,
-      backlogcost: target.backlogcost.value,
-      maxfactoryoutput: target.maxfactoryoutput.value,
-      chaindelay: target.chaindelay.value,
-      customerdemand: target.value
-    };
-
-    Meteor.call();
   }
 });
 
