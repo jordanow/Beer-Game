@@ -15,8 +15,9 @@
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-2 col-md-8 col-lg-8">
                   {{#if Template.subscriptionsReady}}
                   {{#autoForm id="sessionSettings" type="method-update" meteormethod="updateSessionSettings" doc=session collection="Game.sessions"}}
+                  {{> afQuickField name="settings.initialinventory"}}
                   {{> afQuickField name="settings.cost.inventory" }}
-                  {{> afQuickField name="settings.cost.backlog" }}
+                  {{> afQuickField name="settings.cost.backorder" }}
                   {{> afQuickField name="settings.delay" }}
                   {{> afQuickField name="settings.customerdemand" }}
                   <div>

@@ -59,7 +59,7 @@ Template.continuegame.events({
         Bert.alert(res.message, 'danger');
       } else {
         Bert.alert('Accepted', 'success');
-        FlowRouter.go('/game/' + res.gamekey);
+        FlowRouter.go('/game/' + res.gamekey + '/player/' + options.playerkey);
       }
     });
   }

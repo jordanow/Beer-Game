@@ -13,7 +13,7 @@ let generateSettings = () => {
     let setting = {
       cost: {
         inventory: 2,
-        backlog: 2
+        backorder: 2
       },
       delay: 2,
       customerdemand: [2, 2, 2, 4, 6, 8, 10, 14, 20, 24, 16, 10, 6, 2, 2, 2]

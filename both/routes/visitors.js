@@ -29,7 +29,7 @@ visitorRoutes.route('/game/continue', {
   }
 });
 
-visitorRoutes.route('/game/:key', {
+visitorRoutes.route('/game/:gamekey/player/:playerkey', {
   name: 'playgame',
   action() {
     BlazeLayout.render('default', {

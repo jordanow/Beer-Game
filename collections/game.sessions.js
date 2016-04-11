@@ -13,6 +13,14 @@ Game.sessions.deny({
 });
 
 gamesettingsschema = new SimpleSchema({
+  'initialinventory': {
+    type: Number,
+    label: 'Initial level of inventory',
+    min: 0,
+    max: 999999,
+    decimal: true,
+    defaultValue: 15
+  },
   'cost.inventory': {
     type: Number,
     label: 'Cost of inventory',
@@ -21,9 +29,9 @@ gamesettingsschema = new SimpleSchema({
     decimal: true,
     defaultValue: 4
   },
-  'cost.backlog': {
+  'cost.backorder': {
     type: Number,
-    label: 'Cost of backlog',
+    label: 'Cost of backorder',
     min: 0,
     max: 999999,
     decimal: true,

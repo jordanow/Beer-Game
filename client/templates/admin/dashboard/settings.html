@@ -11,8 +11,9 @@
     <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
       {{#if Template.subscriptionsReady}}
       {{#autoForm id="gameSettings" type="method-update" meteormethod="updateGameSettings" doc=settings collection="Game.settings"}}
+      {{> afQuickField name="initialinventory"}}
       {{> afQuickField name="cost.inventory" }}
-      {{> afQuickField name="cost.backlog" }}
+      {{> afQuickField name="cost.backorder" }}
       {{> afQuickField name="delay" }}
       {{> afQuickField name="customerdemand" }}
       <div>

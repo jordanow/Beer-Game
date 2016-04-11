@@ -12,42 +12,6 @@ Game.instances.deny({
   remove: () => true
 });
 
-let roleOrders = new SimpleSchema({
-  week: {
-    type: Number
-  },
-  backlog: {
-    type: Number,
-    autoValue: function() {
-      //=backlog
-    }
-  },
-  inventory: {
-    type: Number,
-    autoValue: function() {
-      //= inventory + incomingdelivery
-    }
-  },
-  incomingdelivery: {
-    type: Number
-  },
-  incomingorder: {
-    type: Number
-  },
-  delivered: {
-    type: Number,
-    autoValue: function() {
-      let self = this;
-      //always Inventory - incomingorder
-
-    }
-  },
-  outgoingorder: {
-    type: Number,
-    optional: true
-  }
-});
-
 let schema = new SimpleSchema({
   key: {
     type: Number,
@@ -60,22 +24,6 @@ let schema = new SimpleSchema({
   session: {
     type: String
   },
-  // 'roles.retailer': {
-  //   type: [roleOrders],
-  //   minCount: 1
-  // },
-  // 'roles.wholesaler': {
-  //   type: [roleOrders],
-  //   minCount: 1
-  // },
-  // 'roles.distributor': {
-  //   type: [roleOrders],
-  //   minCount: 1
-  // },
-  // 'roles.manufacturer': {
-  //   type: [roleOrders],
-  //   minCount: 1
-  // },
   createdAt: {
     type: Date,
     label: "Created at",

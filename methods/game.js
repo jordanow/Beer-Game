@@ -16,20 +16,53 @@ Meteor.methods({
     //If true, assign the position to this person
     //return success
     if (isValidGameKey(options.key)) {
-      let gameInstance = getGameInstance(options.key);
-      let newPlayer = {
-        role: options.position,
-        game: {
-          instance: gameInstance._id,
-          session: gameInstance.session
-        },
-        number: ''
-      };
-      let player = Game.players.insert(newPlayer);
-      return {
-        success: player,
-        gamekey: gameInstance.key
-      };
+      if (isValidRole(options.key, options.position)) {
+        let gameInstance = getGameInstance(options.key);
+        let gameSession = getGameSession(gameInstance.session);
+        let newPlayer = {
+          role: options.position,
+          game: {
+            instance: gameInstance._id,
+            session: gameInstance.session
+          },
+          number: ''
+        };
+        let playerId = Game.players.insert(newPlayer);
+
+        let player = {};
+        if (playerId) {
+          player = Game.players.findOne({
+            _id: playerId
+          });
+
+          let week = {
+            player: {
+              _id: playerId,
+              role: player.role,
+              week: 0,
+              inventory: gameSession.settings.initialinventory
+            }
+          };
+
+          Game.weeks.insert(week);
+
+          return {
+            success: playerId,
+            gamekey: gameInstance.key,
+            playerkey: player && player.number ? player.number : false
+          };
+        } else {
+          return {
+            success: false,
+            message: 'Error while joining game. Please try again!'
+          };
+        }
+      } else {
+        return {
+          success: false,
+          message: 'Selected role has already been taken!'
+        };
+      }
     } else {
       return {
         success: false,
@@ -73,13 +106,6 @@ Meteor.methods({
       };
     }
   },
-  submitOrder: function(options) {
-    check(options, {
-      outOrder: Number
-    });
-
-    return true;
-  },
   isValidGameKey: function(key) {
     check(key, String);
     if (key) {
@@ -90,6 +116,20 @@ Meteor.methods({
     } else {
       return {
         success: false
+      };
+    }
+  },
+  getAvailablePositions: function(gamekey) {
+    check(gamekey, String);
+    if (isValidGameKey(gamekey)) {
+      return {
+        success: true,
+        positionsAvailable: getAvailablePositions(gamekey)
+      };
+    } else {
+      return {
+        success: false,
+        message: 'Incorrect game key!'
       };
     }
   },
@@ -154,8 +194,174 @@ Meteor.methods({
     return Game.sessions.update({
       _id: docId
     }, doc);
+  },
+  submitOrder: function(options) {
+    check(options, {
+      outOrder: Number,
+      player: Object,
+      instance: Object
+    });
+
+    let gameSession = getGameSession(options.instance.session);
+    let gameSettings = gameSession.settings;
+    let prevWeek = getPrevWeekDetails(options.player._id);
+
+    let inDelivery = getIncomingDelivery(player.role, gameSession);
+    let availableInventory = inDelivery + prevWeek.inventory;
+    let inOrder = getIncomingOrder(player.role, gameSession);
+    let toShip = prevWeek.backorder + inOrder;
+    let outDelivery = toShip > availableInventory ? availableInventory : toShip;
+    let backorder = toShip - outDelivery;
+    let currentInventory = availableInventory - outDelivery;
+    let currentCost = calculateCostForWeek(backorder, inventory, prevWeek.cost, gameSettings);
+
+    let week = {
+      player: {
+        _id: options.player._id,
+        role: options.player.role
+      },
+      week: (prevWeek.week + 1),
+      delivery: { in : inDelivery,
+        out: outDelivery
+      },
+      order: { in : inOrder,
+        out: outOrder
+      },
+      backorder: backorder,
+      inventory: prevWeek.inventory + inDelivery,
+      cost: currentCost
+    };
+
+    return Game.weeks.insert(week);
   }
 });
+
+let getCustomerRole = function(myRole) {
+  let customer = null;
+  switch (myRole) {
+    case 'Retailer':
+      customer = 'Customer';
+      break;
+    case 'Distributor':
+      customer = 'Retailer';
+      break;
+    case 'Wholesaler':
+      customer = 'Distributor';
+      break;
+    case 'Manufacturer':
+      customer = 'Wholesaler';
+      break;
+  }
+  return customer;
+};
+
+let getSellerRole = function(myRole) {
+  let seller = null;
+  switch (myRole) {
+    case 'Retailer':
+      seller = 'Distributor';
+      break;
+    case 'Distributor':
+      seller = 'Wholesaler';
+      break;
+    case 'Wholesaler':
+      seller = 'Manufacturer';
+      break;
+    default:
+      seller = 'Manufacturer';
+  }
+  return seller;
+};
+
+let getIncomingDelivery = function(role, session) {
+  let sellerRole = getSellerRole(role);
+  let seller = getPlayerDetails(sellerRole, sessionId);
+
+  if (role !== sellerRole) {
+    let sellerPrevWeek = getPrevWeekDetails(seller._id);
+    return sellerPrevWeek.delivery.out;
+  } else {
+    //This guy is a manufacturer
+    return getManufacturerDelivery(seller, session.delay);
+  }
+};
+
+let getManufacturerDelivery = function(manufacturer, delay) {
+  let manufacturerWeeks = Game.weeks.find({
+    'player._id': manufacturer._id
+  }, {
+    sort: {
+      week: -1
+    }
+  }).fetch();
+
+  if (!!manufacturerWeeks && manufacturerWeeks.length >= delay) {
+    return manufacturerWeeks[delay].order.out;
+  } else {
+    return 0;
+  }
+
+};
+
+let getIncomingOrder = function(role, session) {
+
+};
+
+let calculateBackorder = function() {
+
+};
+
+let calculateCostForWeek = function(backorder, inventory, prevWeekCost, settings) {
+  return prevWeekCost + (backorder * settings.cost.backorder) + (inventory * settings.cost.inventory);
+};
+
+let getPlayerDetails = function(role, sessionId) {
+  return Game.players.findOne({
+    role: role,
+    'game.session': sessionId
+  });
+};
+
+let getPrevWeekDetails = function(playerId) {
+  return Game.weeks.findOne({
+    'player._id': playerId
+  }, {
+    sort: {
+      week: -1
+    }
+  });
+};
+
+let isValidRole = function(gamekey, role) {
+  let positionsAvailable = getAvailablePositions(gamekey);
+  return positionsAvailable.indexOf(role) >= 0;
+};
+
+let getAvailablePositions = function(gamekey) {
+  let gameInstance = Game.instances.findOne({
+    key: Number(gamekey)
+  });
+  let players = Game.players.find({
+    'game.instance': gameInstance._id
+  }).fetch();
+
+  let positionsAvailable = ['Retailer', 'Manufacturer', 'Wholesaler', 'Distributor'];
+  let positionsTaken = [];
+
+  players.forEach(function(player) {
+    if (!!player && player.role) {
+      positionsTaken.push(player.role);
+    }
+  });
+
+  return _.difference(positionsAvailable, positionsTaken);
+};
+
+let getGameSession = function(sessionId) {
+  return Game.sessions.findOne({
+    _id: sessionId
+  });
+};
 
 let getGameInstance = function(key) {
   return Game.instances.findOne({

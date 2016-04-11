@@ -1,6 +1,7 @@
 Template.joingame.onCreated(function() {
   let self = this;
-  Meteor.subscribe('Game.instances');
+  this.subscribe = Meteor.subscribe('Game.instances');
+  this.subscribe = Meteor.subscribe('Game.sessions');
   self.positions = new ReactiveVar(['Retailer', 'Manufacturer', 'Wholesaler', 'Distributor']);
 });
 
@@ -25,7 +26,21 @@ Template.joingame.events({
       } else {
         $("#gamekeybox").removeClass('has-error');
         $("#gamekeybox").addClass('has-success');
-        $("#submitBtn").attr('disabled', false);
+        Meteor.call('getAvailablePositions', key, function(err, res) {
+          if (err) {
+            Bert.alert(err.message, 'danger');
+          } else if (!res.success) {
+            Bert.alert(res.message, 'danger');
+          } else {
+            tpl.positions.set(res.positionsAvailable);
+            if (res.positionsAvailable.length === 0) {
+              Bert.alert('Sorry! All the positions have been taken for this game');
+            } else {
+              $("#submitBtn").attr('disabled', false);
+            }
+          }
+        });
+
       }
     });
   },
@@ -43,7 +58,7 @@ Template.joingame.events({
         Bert.alert(res.message, 'danger');
       } else {
         Bert.alert('Accepted', 'success');
-        FlowRouter.go('/game/' + res.gamekey);
+        FlowRouter.go('/game/' + res.gamekey + '/player/' + res.playerkey);
       }
     });
   }
