@@ -8,7 +8,7 @@
   </div>
   <div class="row">
     <br/>
-    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
+    <div class="col-xs-12 col-sm-8 col-md-10 col-lg-12 well">
       <h4 class="text-center">Session {{session.number}} <small>Created {{formatDate session.createdAt}}</small></h4>
       <button type="button" class="btn btn-default modal-create-games">
       <i class="fa fa-plus fa-lg"></i> Create Games
@@ -19,8 +19,47 @@
     </div>
   </div>
   <div class="row">
+    <div class="col-xs-12 col-sm-8 col-md-10 col-lg-12 well">
+      <button class="btn btn-default pull-left" data-toggle="collapse" data-target="#chart"><i class="fa fa-line-chart"></i> Chart</button>
+      <button class="btn btn-default pull-right" data-toggle="collapse" data-target="#playerprogress"><i class="fa fa-user"></i> Game progress</button>
+      <br/>
+    </div>
+  </div>
+  <div class="row collapse" id="chart">
+    <div class="col-xs-12 col-sm-8 col-md-10 col-lg-12 well">
+      <div class="list-group"  >
+        {{> highchartsHelper chartId="bullwhipcart" chartObject=bullwhipcart}}
+      </div>
+    </div>
+  </div>
+  <div class="row collapse" id="playerprogress">
+    <div class="col-xs-12 col-sm-8 col-md-10 col-lg-12 well">
+      <div class="list-group">
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <th class="text-center">Game key</th>
+              <th class="text-center">Retailer</th>
+              <th class="text-center">Distributor</th>
+              <th class="text-center">Wholesaler</th>
+              <th class="text-center">Manufacturer</th>
+            </thead>
+            <tbody>
+              <!--               {{#each progressreports}}
+              <tr>
+                <td>{{gamekey this.game.instance}}</td>
+                <td>{{statehelper this.state}}</td>
+              </tr>
+              {{/each}} -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
     {{#if instances.length}}
-    <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
+    <div class="col-xs-12 col-sm-8 col-md-10 col-lg-12 well">
       <div class="table-responsive">
         <table class="table table-bordered table-striped">
           <thead>
