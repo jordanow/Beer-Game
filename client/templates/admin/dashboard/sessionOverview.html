@@ -40,17 +40,20 @@
             <thead>
               <th class="text-center">Game key</th>
               <th class="text-center">Retailer</th>
-              <th class="text-center">Distributor</th>
               <th class="text-center">Wholesaler</th>
+              <th class="text-center">Distributor</th>
               <th class="text-center">Manufacturer</th>
             </thead>
             <tbody>
-              <!--               {{#each progressreports}}
+              {{#each progressreports}}
               <tr>
-                <td>{{gamekey this.game.instance}}</td>
-                <td>{{statehelper this.state}}</td>
+                <td>{{instancekey this.game.instance}}</td>
+                <td>Week {{currentweek 'Retailer'}}</td>
+                <td>Week {{currentweek 'Wholesaler'}}</td>
+                <td>Week {{currentweek 'Distributor'}}</td>
+                <td>Week {{currentweek 'Manufacturer'}}</td>
               </tr>
-              {{/each}} -->
+              {{/each}}
             </tbody>
           </table>
         </div>

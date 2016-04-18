@@ -73,3 +73,41 @@ Meteor.publish('Game.weeks', function(playerkey) {
   }
   return Game.weeks.find(q);
 });
+
+Meteor.smartPublish('LastWeekPubs', function(sessionId) {
+  check(sessionId, String);
+
+  let lastweekdata = [];
+
+  lastweekdata.push(getLastWeek('Retailer', sessionId));
+  lastweekdata.push(getLastWeek('Manufacturer', sessionId));
+  lastweekdata.push(getLastWeek('Distributor', sessionId));
+  lastweekdata.push(getLastWeek('Wholesaler', sessionId));
+
+  return lastweekdata;
+});
+
+//TODO: Show weeks from only the open games instances
+let getLastWeek = function(role, sessionId) {
+  return Game.weeks.find({
+    'player.role': role,
+    'game.session': sessionId
+  }, {
+    sort: {
+      week: 1
+    },
+    limit: 1
+  });
+
+  // .observeChanges({
+  //   added: function(weekId, week) {
+
+  //   },
+  //   changed: function(weekId, week) {
+
+  //   },
+  //   removed: function(weekId, week) {
+
+  //   }
+  // });
+};

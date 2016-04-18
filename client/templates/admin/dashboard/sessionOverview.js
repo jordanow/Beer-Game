@@ -1,12 +1,18 @@
 Template.sessionOverview.onCreated(function() {
   Template.instance().subscribe = Meteor.subscribe('Game.sessions', FlowRouter.getParam('sessionNumber'));
   Template.instance().subscribe = Meteor.subscribe('Game.instances');
-
   let self = this;
 
   self.roledemands = new ReactiveVar([]);
 
   Template.instance().autorun(function() {
+    let session = Game.sessions.findOne({
+      number: Number(FlowRouter.getParam('sessionNumber'))
+    });
+    if (session && session._id) {
+      Template.instance().weekdata = Meteor.subscribe('LastWeekPubs', session._id);
+    }
+
     Meteor.call('getChartData', function(err, res) {
       if (res && res.success) {
         self.roledemands.set(res.data);
@@ -56,6 +62,38 @@ Template.sessionOverview.helpers({
       return 'In progress';
     } else {
       return 'Stopped';
+    }
+  },
+  progressreports: function() {
+    let weeks = Game.weeks.find().fetch();
+
+    return _.uniq(weeks, 'week', function(w) {
+      return w.week.toString();
+    });
+  },
+  currentweek: function(role) {
+    let currentweek = Game.weeks.findOne({
+      'player.role': role
+    }, {
+      sort: {
+        week: -1
+      }
+    });
+
+    if (currentweek && currentweek.week) {
+      return currentweek.week;
+    } else {
+      return 0;
+    }
+  },
+  instancekey: function(instanceId) {
+    let instance = Game.instances.findOne({
+      _id: instanceId
+    });
+    if (instance && instance.key) {
+      return instance.key;
+    } else {
+      return '-';
     }
   },
   bullwhipcart: function() {
