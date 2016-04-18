@@ -5,6 +5,27 @@ Meteor.methods({
       settings: settings
     });
   },
+  stopallgames: function(sessionNumber) {
+    check(sessionNumber, String);
+    let session = Game.sessions.findOne({
+      number: Number(sessionNumber)
+    });
+
+    if (session) {
+      return Game.instances.update({
+        state: 'play'
+      }, {
+        $set: {
+          state: 'closed'
+        }
+      }, {
+        multi: true
+      });
+    } else {
+      throw new Meteor.Error(403, 'Session not found');
+    }
+
+  },
   joingame: function(options) {
     check(options, {
       key: String,
@@ -36,13 +57,27 @@ Meteor.methods({
           });
 
           let week = {
+            game: {
+              instance: gameInstance._id,
+              session: gameInstance.session
+            },
             player: {
               _id: playerId,
-              role: player.role,
-              week: 0,
-              inventory: gameSession.settings.initialinventory
-            }
+              role: player.role
+            },
+            week: 0,
+            order: {
+              "in": 0
+            },
+            delivery: {
+              "in": 0
+            },
+            inventory: gameSession.settings.initialinventory
           };
+
+          if (player.role === 'Retailer') {
+            week.order.in = gameSession.settings.customerdemand[0];
+          }
 
           Game.weeks.insert(week);
 
@@ -119,17 +154,56 @@ Meteor.methods({
       };
     }
   },
+  makeNextMove: function(gamekey, playerkey) {
+    check(gamekey, Match.Optional(String));
+    check(playerkey, Match.Optional(String));
+
+    if (Meteor.isServer) {
+      if (!!gamekey && !!playerkey) {
+        if (isValidGameKey(gamekey)) {
+          if (allInSameWeek(gamekey)) {
+            return {
+              success: addNewWeek(gamekey, playerkey)
+            };
+          } else {
+            return {
+              success: false
+            };
+          }
+        } else {
+          return {
+            success: false,
+            message: 'Incorrect game key!'
+          };
+        }
+      } else {
+        return {
+          success: false,
+          message: 'Game key is required!'
+        };
+      }
+    } else {
+      return;
+    }
+  },
   getAvailablePositions: function(gamekey) {
-    check(gamekey, String);
-    if (isValidGameKey(gamekey)) {
-      return {
-        success: true,
-        positionsAvailable: getAvailablePositions(gamekey)
-      };
+    check(gamekey, Match.Optional(String));
+    if (!!gamekey) {
+      if (isValidGameKey(gamekey)) {
+        return {
+          success: true,
+          positionsAvailable: getAvailablePositions(gamekey)
+        };
+      } else {
+        return {
+          success: false,
+          message: 'Incorrect game key!'
+        };
+      }
     } else {
       return {
         success: false,
-        message: 'Incorrect game key!'
+        message: 'Game key is required!'
       };
     }
   },
@@ -195,46 +269,111 @@ Meteor.methods({
       _id: docId
     }, doc);
   },
+  allInSameWeek: function(gamekey) {
+    if (Meteor.isServer) {
+      check(gamekey, Match.Optional(String));
+      if (!!gamekey && isValidGameKey(gamekey)) {
+        return allInSameWeek(gamekey);
+      }
+    }
+  },
   submitOrder: function(options) {
-    check(options, {
-      outOrder: Number,
-      player: Object,
-      instance: Object
-    });
+    if (Meteor.isServer) {
+      check(options, Object);
+      let gameSession = getGameSession(options.instance.session);
+      let gameSettings = gameSession.settings;
 
-    let gameSession = getGameSession(options.instance.session);
-    let gameSettings = gameSession.settings;
-    let prevWeek = getPrevWeekDetails(options.player._id);
+      let currentWeek = getCurrentWeekDetails(options.player._id);
+      let prevWeek = getPreviousWeekDetails(options.player._id);
 
-    let inDelivery = getIncomingDelivery(player.role, gameSession);
-    let availableInventory = inDelivery + prevWeek.inventory;
-    let inOrder = getIncomingOrder(player.role, gameSession);
-    let toShip = prevWeek.backorder + inOrder;
-    let outDelivery = toShip > availableInventory ? availableInventory : toShip;
-    let backorder = toShip - outDelivery;
-    let currentInventory = availableInventory - outDelivery;
-    let currentCost = calculateCostForWeek(backorder, inventory, prevWeek.cost, gameSettings);
+      let inDelivery = getIncomingDelivery(options.player.role, gameSession);
+      let availableInventory = inDelivery + prevWeek.inventory;
+      let inOrder = getIncomingOrder(options.player.role, gameSession, options.instance);
 
-    let week = {
-      player: {
-        _id: options.player._id,
-        role: options.player.role
-      },
-      week: (prevWeek.week + 1),
-      delivery: { in : inDelivery,
-        out: outDelivery
-      },
-      order: { in : inOrder,
-        out: outOrder
-      },
-      backorder: backorder,
-      inventory: prevWeek.inventory + inDelivery,
-      cost: currentCost
-    };
+      let toShip = prevWeek.backorder + inOrder;
+      let outDelivery = toShip > availableInventory ? availableInventory : toShip;
+      let backorder = toShip - outDelivery;
+      let currentInventory = availableInventory - outDelivery;
 
-    return Game.weeks.insert(week);
+
+      let currentCost = calculateCostForWeek(gameSettings, backorder, currentInventory, prevWeek.cost);
+
+      let week = {
+        'order.out': options.outOrder,
+        cost: currentCost,
+        'delivery.out': outDelivery,
+        inventory: currentInventory,
+        backorder: backorder
+      };
+
+      return Game.weeks.update({
+        _id: currentWeek._id
+      }, {
+        $set: week
+      });
+    }
   }
 });
+
+let addNewWeek = function(gamekey, playerkey) {
+  //For the player add a new week
+  //For retailer -> order in comes from settings
+  //For Distributor -> order in comes from retailer's prev order out
+  //For Wholesaler -> order in comes from distributor's prev order out
+  //For Manufacturer -> order in comes from wholesaler's prev order out
+  //
+  //Also, find the delivery in for all the people
+  //For retailer -> delivery in comes from distributor's prev delivery out
+  //For Distributor -> delivery in comes from distributor's prev delivery out
+  //For Wholesaler -> delivery in comes from Manufacturer's prev delivery out
+  //For Manufacturer -> delivery in comes from Manufacturer's (prev*delay)order out
+
+  //Bugs:
+  //Wholesaler's order in is becoming delivery in
+  //Manufacturer's week is not added
+  //Always check if the player can make next move or not
+
+  if (Meteor.isServer) {
+    let gameInstance = getGameInstance(gamekey);
+    let gameSession = getGameSession(gameInstance.session);
+
+    let player = Game.players.findOne({
+      number: Number(playerkey),
+      'game.instance': gameInstance._id
+    });
+
+    let prevWeek = getPreviousWeekDetails(player._id);
+
+    //New order must be created only if the previous weeks order was submitted
+    let inDelivery = getIncomingDelivery(player.role, gameSession);
+    let inOrder = getIncomingOrder(player.role, gameSession, gameInstance);
+
+    let week = {
+      week: getCurrentWeek(gameInstance._id) + 1,
+      delivery: {
+        "in": inDelivery
+      },
+      order: {
+        "in": inOrder
+      },
+      backorder: prevWeek.backorder + inOrder,
+      inventory: prevWeek.inventory + inDelivery,
+      game: {
+        instance: gameInstance._id,
+        session: gameInstance.session
+      },
+      player: {
+        _id: player._id,
+        role: player.role
+      }
+    };
+
+    console.log(week);
+    return Game.weeks.insert(week);
+  }
+
+};
+
 
 let getCustomerRole = function(myRole) {
   let customer = null;
@@ -275,14 +414,14 @@ let getSellerRole = function(myRole) {
 
 let getIncomingDelivery = function(role, session) {
   let sellerRole = getSellerRole(role);
-  let seller = getPlayerDetails(sellerRole, sessionId);
+  let seller = getPlayerDetails(sellerRole, session._id);
 
   if (role !== sellerRole) {
-    let sellerPrevWeek = getPrevWeekDetails(seller._id);
-    return sellerPrevWeek.delivery.out;
+    let sellerPrevWeek = getCurrentWeekDetails(seller._id);
+    return sellerPrevWeek.delivery.out || 0;
   } else {
     //This guy is a manufacturer
-    return getManufacturerDelivery(seller, session.delay);
+    return getManufacturerDelivery(seller, session.delay) || 0;
   }
 };
 
@@ -303,15 +442,36 @@ let getManufacturerDelivery = function(manufacturer, delay) {
 
 };
 
-let getIncomingOrder = function(role, session) {
+let getIncomingOrder = function(role, session, instance) {
+  let customerRole = getCustomerRole(role);
 
+  if (customerRole === 'Customer') {
+    //get from game settings
+    return session.settings.customerdemand[getCurrentWeek(instance._id)];
+  } else {
+    let customer = getPlayerDetails(customerRole, session._id);
+    let customerPrevWeek = getCurrentWeekDetails(customer._id);
+    return customerPrevWeek.order.out || 0;
+  }
 };
 
-let calculateBackorder = function() {
+let getCurrentWeek = function(instanceId) {
+  let gameweeks = Game.weeks.find({
+    'game.instance': instanceId
+  }).fetch();
 
+  let weeks = [];
+
+  gameweeks.forEach(function(w) {
+    weeks.push(w.week);
+  });
+
+  weeks = weeks.sort();
+
+  return weeks[0];
 };
 
-let calculateCostForWeek = function(backorder, inventory, prevWeekCost, settings) {
+let calculateCostForWeek = function(settings, backorder = 0, inventory = 0, prevWeekCost = 0) {
   return prevWeekCost + (backorder * settings.cost.backorder) + (inventory * settings.cost.inventory);
 };
 
@@ -322,7 +482,7 @@ let getPlayerDetails = function(role, sessionId) {
   });
 };
 
-let getPrevWeekDetails = function(playerId) {
+let getCurrentWeekDetails = function(playerId) {
   return Game.weeks.findOne({
     'player._id': playerId
   }, {
@@ -332,6 +492,24 @@ let getPrevWeekDetails = function(playerId) {
   });
 };
 
+let getPreviousWeekDetails = function(playerId) {
+  let weeks = Game.weeks.find({
+    'player._id': playerId
+  }, {
+    sort: {
+      week: -1
+    }
+  }).fetch();
+
+  if (!!weeks) {
+    if (weeks.length > 1) {
+      return weeks[1];
+    } else {
+      return weeks[0];
+    }
+  }
+};
+
 let isValidRole = function(gamekey, role) {
   let positionsAvailable = getAvailablePositions(gamekey);
   return positionsAvailable.indexOf(role) >= 0;
@@ -339,7 +517,8 @@ let isValidRole = function(gamekey, role) {
 
 let getAvailablePositions = function(gamekey) {
   let gameInstance = Game.instances.findOne({
-    key: Number(gamekey)
+    key: Number(gamekey),
+    state: 'play'
   });
   let players = Game.players.find({
     'game.instance': gameInstance._id
@@ -355,6 +534,31 @@ let getAvailablePositions = function(gamekey) {
   });
 
   return _.difference(positionsAvailable, positionsTaken);
+};
+
+let allInSameWeek = function(gamekey) {
+  let gameInstance = Game.instances.findOne({
+    key: Number(gamekey)
+  });
+
+  let Retailer = Game.players.findOne({
+    'game.instance': gameInstance._id,
+    role: 'Retailer'
+  });
+
+
+  let RetailerWeek = getCurrentWeekDetails(Retailer._id);
+  if (!!RetailerWeek) {
+    return Game.weeks.find({
+      'game.instance': gameInstance._id,
+      week: RetailerWeek.week,
+      "order.out": {
+        $exists: true
+      }
+    }).count() === 4;
+  } else {
+    return true;
+  }
 };
 
 let getGameSession = function(sessionId) {

@@ -13,6 +13,12 @@ Game.weeks.deny({
 });
 
 let gameweeksschema = new SimpleSchema({
+  'game.instance': {
+    type: String
+  },
+  'game.session': {
+    type: String
+  },
   'player._id': {
     type: String
   },
@@ -63,7 +69,7 @@ let gameweeksschema = new SimpleSchema({
   },
   'cost': {
     type: Number,
-    defaultValue: 0,
+    optional: true,
     min: 0,
     label: 'Cost incurred for the week'
   },

@@ -47,9 +47,9 @@
             <tr>
               <td>{{this.week}}</td>
               <td>{{this.delivery.in}}</td>
-              <td>{{this.order.out}}</td>
-              <td>{{this.delivery.out}}</td>
               <td>{{this.order.in}}</td>
+              <td>{{this.delivery.out}}</td>
+              <td>{{this.order.out}}</td>
               <td>{{this.backorder}}</td>
               <td>{{this.inventory}}</td>
               <td>{{this.cost}}</td>
@@ -63,9 +63,13 @@
             <li class="list-group-item">
               <form class="form-horizontal orderOfThisWeek">
                 <div class="form-group">
-                  <label class="col-xs-7 col-sm-6 col-md-6 control-label"> Time remaining </label>
+                  <label class="col-xs-7 col-sm-6 col-md-6 control-label">Time remaining</label>
                   <div class="col-xs-5 col-sm-6 col-md-6 pull-right">
+                    {{#if allplayersin}}
                     <span class="badge">{{timeRemaining}}</span>
+                    {{else}}
+                    <span class="badge">0</span>
+                    {{/if}}
                   </div>
                 </div>
                 <div class="form-group">
@@ -76,7 +80,11 @@
                 </div>
                 <div class="form-group">
                   <div class="text-center">
+                    {{#if allplayersin}}
                     <button type="submit" class="btn btn-default">Submit</button>
+                    {{else}}
+                    <span class="badge">Waiting for other players...</span>
+                    {{/if}}
                   </div>
                 </div>
               </form>

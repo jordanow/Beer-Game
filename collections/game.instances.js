@@ -24,6 +24,11 @@ let schema = new SimpleSchema({
   session: {
     type: String
   },
+  state: {
+    type: String,
+    allowedValues: ['play', 'closed'],
+    defaultValue: 'play'
+  },
   createdAt: {
     type: Date,
     label: "Created at",

@@ -1,0 +1,35 @@
+<template name="stopallgames">
+<div class="container">
+  <div class="col-sm-4 col-md-8 col-lg-10">
+    <div class="modal fade ">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <h5>Stop all games from session {{session}}</h5>
+              </div>
+            </div>
+            <div class="panel panel-default">
+              <div class="panel-body">
+                <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-2 col-md-8 col-lg-8">
+                  <div class="row">
+                    <b>This will stop all games in this session. Are you sure you want to continue?</b>
+                  </div>
+                  <div class="row">
+                    <button class="btn btn-danger confirmstopallgames">Yes, stop all games</button>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <small class="pull-left">This action cannot be reverted.</small>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><i class="fa fa-close"></i> Close</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>

@@ -9,6 +9,7 @@
   <div class="row">
     <br/>
     <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
+      <h4 class="text-center">Session {{session.number}} <small>Created {{formatDate session.createdAt}}</small></h4>
       <button type="button" class="btn btn-default modal-create-games">
       <i class="fa fa-plus fa-lg"></i> Create Games
       </button>
@@ -18,24 +19,31 @@
     </div>
   </div>
   <div class="row">
+    {{#if instances.length}}
     <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
-      {{#if instances}}
       <div class="table-responsive">
         <table class="table table-bordered table-striped">
           <thead>
-            <th>Game key</th>
+            <th class="text-center">Game key</th>
+            <th class="text-center">State</th>
           </thead>
           <tbody>
             {{#each instances}}
             <tr>
               <td>{{this.key}}</td>
+              <td>{{statehelper this.state}}</td>
             </tr>
             {{/each}}
           </tbody>
         </table>
       </div>
+      {{#if canstopgames}}
+      <button type="button" class="btn btn-default stopallgames pull-right">
+      <i class="fa fa-stop fa-lg"></i> Stop all games
+      </button>
       {{/if}}
     </div>
+    {{/if}}
   </div>
 </div>
 </template>
