@@ -20,7 +20,7 @@
   </div>
   <div class="row">
     <div class="col-xs-12 col-sm-8 col-md-10 col-lg-12 well">
-      <button class="btn btn-default pull-left" data-toggle="collapse" data-target="#chart"><i class="fa fa-line-chart"></i> Chart</button>
+      <button class="btn btn-danger pull-left deletesession"><i class="fa fa-trash"></i> Delete session</button>
       <button class="btn btn-default pull-right" data-toggle="collapse" data-target="#playerprogress"><i class="fa fa-user"></i> Game progress</button>
       <br/>
     </div>
@@ -68,12 +68,16 @@
           <thead>
             <th class="text-center">Game key</th>
             <th class="text-center">State</th>
+            <th></th>
           </thead>
           <tbody>
             {{#each instances}}
             <tr>
               <td>{{this.key}}</td>
               <td>{{statehelper this.state}}</td>
+              <td>
+                <button class="btn btn-default pull-left openchart" data-toggle="collapse" data-target="#chart"><i class="fa fa-line-chart"></i> Chart</button>
+              </td>
             </tr>
             {{/each}}
           </tbody>

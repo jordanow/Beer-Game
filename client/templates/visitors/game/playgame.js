@@ -56,11 +56,6 @@ Template.playgame.helpers({
 
     if (game) {
       return game;
-    } else if (game.state === 'closed') {
-      Bert.alert('The game is over', 'danger');
-      FlowRouter.go('/');
-    } else {
-      FlowRouter.go('/');
     }
   },
   player: function() {
@@ -70,8 +65,6 @@ Template.playgame.helpers({
 
     if (player) {
       return player;
-    } else {
-      FlowRouter.go('/');
     }
 
   },

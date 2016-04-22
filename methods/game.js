@@ -56,7 +56,15 @@ Meteor.methods({
             _id: playerId
           });
 
-          let week = {
+
+          let inOrder = gameSession.settings.customerdemand[0];
+          let availableInventory = gameSession.settings.initialinventory;
+          let toShip = inOrder;
+          let outDelivery = toShip > availableInventory ? availableInventory : toShip;
+          let backorder = toShip - outDelivery;
+          let currentInventory = availableInventory - outDelivery;
+
+          let week0 = {
             game: {
               instance: gameInstance._id,
               session: gameInstance.session
@@ -67,19 +75,45 @@ Meteor.methods({
             },
             week: 0,
             order: {
+              "in": 0,
+              "out": 0
+            },
+            delivery: {
+              "in": 0,
+              "out": 0
+            },
+            cost: 0,
+            inventory: availableInventory
+          };
+
+          let week1 = {
+            game: {
+              instance: gameInstance._id,
+              session: gameInstance.session
+            },
+            player: {
+              _id: playerId,
+              role: player.role
+            },
+            week: 1,
+            order: {
               "in": 0
             },
             delivery: {
-              "in": 0
+              "in": 0,
+              "out": 0
             },
-            inventory: gameSession.settings.initialinventory
+            inventory: availableInventory
           };
 
           if (player.role === 'Retailer') {
-            week.order.in = gameSession.settings.customerdemand[0];
+            week1.order.in = gameSession.settings.customerdemand[0];
+            week1.delivery.out = outDelivery;
+            week1.inventory = currentInventory;
           }
 
-          Game.weeks.insert(week);
+          Game.weeks.insert(week0);
+          Game.weeks.insert(week1);
 
           return {
             success: playerId,
@@ -264,6 +298,10 @@ Meteor.methods({
   updateSessionSettings: function(doc, docId) {
     check(doc, Object);
     check(docId, String);
+
+    doc.$set['settings.customerdemand'] = _.filter(doc.$set['settings.customerdemand'], function(i) {
+      return !!i;
+    });
 
     return Game.sessions.update({
       _id: docId
@@ -517,8 +555,9 @@ let isValidRole = function(gamekey, role) {
 
 let getAvailablePositions = function(gamekey) {
   let gameInstance = Game.instances.findOne({
-    key: Number(gamekey),
-    state: 'play'
+    key: Number(gamekey)
+      // ,
+      // state: 'play'
   });
   let players = Game.players.find({
     'game.instance': gameInstance._id
