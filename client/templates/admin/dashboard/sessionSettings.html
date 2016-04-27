@@ -7,7 +7,7 @@
           <div class="modal-body">
             <div class="panel panel-default">
               <div class="panel-body">
-                <h5>Edit session {{session.number}}  settings</h5>
+                <h5>Edit {{session.fullName}}  settings</h5>
               </div>
             </div>
             <div class="panel panel-default">
@@ -15,6 +15,7 @@
                 <div class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-offset-2 col-md-8 col-lg-8">
                   {{#if Template.subscriptionsReady}}
                   {{#autoForm id="sessionSettings" type="method-update" meteormethod="updateSessionSettings" doc=session collection="Game.sessions"}}
+                  {{> afQuickField name="name"}}
                   {{> afQuickField name="settings.initialinventory"}}
                   {{> afQuickField name="settings.cost.inventory" }}
                   {{> afQuickField name="settings.cost.backorder" }}

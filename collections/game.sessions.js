@@ -101,9 +101,22 @@ let schema = new SimpleSchema({
       }
     }
   },
+  name: {
+    type: String,
+    optional: true
+  },
   settings: {
     type: gamesettingsschema
   }
 });
 
 Game.sessions.attachSchema(schema);
+
+Game.sessions.helpers({
+  fullName() {
+    return (this.name ? this.name + ' - ' + this.number : 'Session ' + this.number);
+  },
+  shortName() {
+    return this.name ? this.name : 'Session ' + this.number
+  }
+});

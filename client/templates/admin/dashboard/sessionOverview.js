@@ -1,12 +1,6 @@
   // Admin
-  // Delete session button - to delete an old session
-  // Delete a game instance only if it has been stop
   // Give a per game stop and delete button
-  // Show player key in the progress report
-  //
-  //
-  // Allow to give a name to each session
-  // Sort the game sessions by date
+
   // Delivery in delay applies to everyone and not just the manufacturer - everyone gets their order after x weeks.
   //
   // Next meet on tuesday next week.
@@ -43,21 +37,6 @@
             createdAt: -1
           }
         }).fetch();
-      }
-    },
-    canDelete: function() {
-      let session = Game.sessions.findOne({
-        number: Number(FlowRouter.getParam('sessionNumber'))
-      });
-
-      if (session && session._id) {
-
-        return Game.instances.find({
-          session: session._id,
-          state: 'play'
-        }).count() === 0 ? true : false;
-      } else {
-        return false;
       }
     },
     canstopgames: function() {
@@ -106,6 +85,21 @@
         return currentweek.week;
       } else {
         return 0;
+      }
+    },
+    playernumber: function(role) {
+      let currentweek = Game.weeks.findOne({
+        'player.role': role
+      }, {
+        sort: {
+          week: -1
+        }
+      });
+
+      if (currentweek && currentweek.player && currentweek.player.number) {
+        return currentweek.player.number;
+      } else {
+        return '?';
       }
     },
     instancekey: function(instanceId) {
@@ -242,8 +236,12 @@
       let res = confirm('Are you sure you want to delete this session? This will delete all data related to this session. Note: This action cannot be reversed!');
 
       if (!!res) {
-        Meteor.call('deleteSession', FlowRouter.getParam('sessionNumber'), function() {
-          FlowRouter.go('/admin/overview');
+        Meteor.call('deleteSession', FlowRouter.getParam('sessionNumber'), function(err) {
+          if (err) {
+            Bert.alert(err.message, 'danger');
+          } else {
+            FlowRouter.go('/admin/overview');
+          }
         });
       }
     },

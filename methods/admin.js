@@ -7,6 +7,15 @@ Meteor.methods({
       });
 
       if (gameSession && gameSession._id) {
+        let instancesInPlay = Game.instances.find({
+          session: gameSession._id,
+          state: 'play'
+        }).count();
+
+        if (instancesInPlay > 0) {
+          throw new Meteor.Error(403, 'Games are in session. Please stop all the games to continue.');
+        }
+
         Game.weeks.remove({
           'game.session': gameSession._id
         });

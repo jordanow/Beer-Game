@@ -71,7 +71,8 @@ Meteor.methods({
             },
             player: {
               _id: playerId,
-              role: player.role
+              role: player.role,
+              number: player.number
             },
             week: 0,
             order: {
@@ -93,7 +94,8 @@ Meteor.methods({
             },
             player: {
               _id: playerId,
-              role: player.role
+              role: player.role,
+              number: player.number
             },
             week: 1,
             order: {
@@ -402,7 +404,8 @@ let addNewWeek = function(gamekey, playerkey) {
       },
       player: {
         _id: player._id,
-        role: player.role
+        role: player.role,
+        number: player.number
       }
     };
 

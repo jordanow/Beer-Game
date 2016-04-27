@@ -21,7 +21,7 @@
       {{/if}}
       <div class="list-group">
         {{#each sessions}}
-        <a type="button" class="list-group-item" href="/admin/sessions/{{this.number}}"><i class="fa fa-chevron-right"></i>  Session {{this.number}} <span class="pull-right"> Created {{formatDate this.createdAt}}</span></a>
+        <a type="button" class="list-group-item" href="/admin/sessions/{{this.number}}"><i class="fa fa-chevron-right"></i> {{this.shortName}} <span class="pull-right"> Created {{formatDate this.createdAt}}</span></a>
         {{/each}}
       </div>
     </div>

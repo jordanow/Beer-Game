@@ -8,7 +8,11 @@ Template.dashboardOverview.helpers({
     return !Template.instance().subscribe.ready();
   },
   sessions: function() {
-    return Game.sessions.find();
+    return Game.sessions.find({}, {
+      sort: {
+        createdAt: -1
+      }
+    });
   }
 });
 

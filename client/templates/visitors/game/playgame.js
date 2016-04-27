@@ -7,10 +7,11 @@ Template.playgame.onCreated(function() {
 
   self.timeRemaining = new ReactiveVar(200);
   self.allplayersin = new ReactiveVar(false);
+  self.gameIsAvailable = new ReactiveVar(false);
 
   self.joinInterval = Meteor.setInterval(function() {
     Meteor.call('getAvailablePositions', FlowRouter.getParam('gamekey'), function(err, res) {
-      if (res && res.positionsAvailable.length === 0) {
+      if (res && res.positionsAvailable && res.positionsAvailable.length === 0) {
         self.allplayersin.set(true);
         Meteor.clearInterval(self.joinInterval);
       }
@@ -56,15 +57,22 @@ Template.playgame.helpers({
 
     if (game) {
       return game;
+    } else {
+      Template.instance().gameIsAvailable.set(false);
     }
+  },
+  gameIsAvailable: function() {
+    return Template.instance().gameIsAvailable.get();
   },
   player: function() {
     let player = Game.players.findOne({
       number: Number(FlowRouter.getParam('playerkey'))
     });
-
     if (player) {
+      Template.instance().gameIsAvailable.set(true);
       return player;
+    } else {
+      Template.instance().gameIsAvailable.set(false);
     }
 
   },

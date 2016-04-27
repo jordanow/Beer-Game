@@ -20,6 +20,7 @@
       </div>
     </div>
   </div>
+  {{#if gameIsAvailable}}
   <div class="row">
     <div class="col-sm-12 col-md-12 col-lg-12 well">
       <div class="table-responsive">
@@ -94,6 +95,9 @@
       </div>
     </div>
   </div>
+  {{else}}
+  {{>loading}}
+  {{/if}}
   {{else}}
   {{>loading}}
   {{/if}}
