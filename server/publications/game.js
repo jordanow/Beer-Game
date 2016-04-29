@@ -5,7 +5,7 @@ Meteor.publish('Game.settings', function() {
 Meteor.publish('currentSession', function(options) {
   check(options, Object);
   let player = Game.players.findOne({
-    number: Number(options.playerkey)
+    key: Number(options.playerkey)
   });
 
   return Game.sessions.find({
@@ -21,7 +21,7 @@ Meteor.publish('Game.sessions', function(number) {
   let q = {};
 
   if (number) {
-    q.number = Number(number);
+    q.key = Number(number);
   }
 
   return Game.sessions.find(q);
@@ -46,7 +46,7 @@ Meteor.publish('Game.players', function(playerkey) {
   let q = {};
 
   if (playerkey) {
-    q.number = Number(playerkey);
+    q.key = Number(playerkey);
   }
   return Game.players.find(q);
 });
@@ -64,7 +64,7 @@ Meteor.publish('Game.weeks', function(playerkey) {
 
   if (playerkey) {
     let player = Game.players.findOne({
-      number: Number(playerkey)
+      key: Number(playerkey)
     });
     if (!!player && !!player._id) {
       q.player._id = player._id;

@@ -66,7 +66,7 @@ Template.playgame.helpers({
   },
   player: function() {
     let player = Game.players.findOne({
-      number: Number(FlowRouter.getParam('playerkey'))
+      key: Number(FlowRouter.getParam('playerkey'))
     });
     if (player) {
       Template.instance().gameIsAvailable.set(true);
@@ -81,7 +81,7 @@ Template.playgame.helpers({
   },
   weeks: function() {
     let player = Game.players.findOne({
-      number: Number(FlowRouter.getParam('playerkey'))
+      key: Number(FlowRouter.getParam('playerkey'))
     });
     if (player && player._id) {
       return Game.weeks.find({
@@ -97,7 +97,7 @@ Template.playgame.events({
     let options = {};
     options.outOrder = Number(e.target.outOrder.value) || 0;
     options.player = Game.players.findOne({
-      number: Number(FlowRouter.getParam('playerkey'))
+      key: Number(FlowRouter.getParam('playerkey'))
     });
     options.instance = Game.instances.findOne({
       key: Number(FlowRouter.getParam('gamekey'))

@@ -14,7 +14,7 @@
 
     Template.instance().autorun(function() {
       let session = Game.sessions.findOne({
-        number: Number(FlowRouter.getParam('sessionNumber'))
+        key: Number(FlowRouter.getParam('sessionNumber'))
       });
       if (session && session._id) {
         Template.instance().weekdata = Meteor.subscribe('LastWeekPubs', session._id);
@@ -26,7 +26,7 @@
   Template.sessionOverview.helpers({
     instances: function() {
       let session = Game.sessions.findOne({
-        number: Number(FlowRouter.getParam('sessionNumber'))
+        key: Number(FlowRouter.getParam('sessionNumber'))
       });
 
       if (session && session._id) {
@@ -41,7 +41,7 @@
     },
     canstopgames: function() {
       let session = Game.sessions.findOne({
-        number: Number(FlowRouter.getParam('sessionNumber'))
+        key: Number(FlowRouter.getParam('sessionNumber'))
       });
 
       if (session && session._id) {
@@ -55,7 +55,7 @@
     },
     session: function() {
       return Game.sessions.findOne({
-        number: Number(FlowRouter.getParam('sessionNumber'))
+        key: Number(FlowRouter.getParam('sessionNumber'))
       });
     },
     statehelper: function(state) {
@@ -122,7 +122,7 @@
         retailerdemand = [];
 
       let session = Game.sessions.findOne({
-        number: Number(FlowRouter.getParam('sessionNumber'))
+        key: Number(FlowRouter.getParam('sessionNumber'))
       });
 
       if (!!session && session.settings) {

@@ -9,7 +9,7 @@ Meteor.methods({
     });
 
     let session = Game.sessions.findOne({
-      number: options.session
+      key: options.session
     });
 
     if (session && session._id) {
@@ -30,7 +30,11 @@ Meteor.methods({
     check(docId, String);
 
     doc.$set['customerdemand'] = _.filter(doc.$set['customerdemand'], function(i) {
-      return !!i.week;
+      return !!i && parseInt(i.week) >= 0 && i.value;
+    });
+
+    doc.$set['customerdemand'] = _.sortBy(doc.$set['customerdemand'], function(i) {
+      return parseInt(i.week);
     });
 
     return Game.settings.update({
@@ -42,9 +46,12 @@ Meteor.methods({
     check(docId, String);
 
     doc.$set['settings.customerdemand'] = _.filter(doc.$set['settings.customerdemand'], function(i) {
-      return !!i && !!i.week;
+      return !!i && parseInt(i.week) >= 0 && i.value;
     });
 
+    doc.$set['settings.customerdemand'] = _.sortBy(doc.$set['settings.customerdemand'], function(i) {
+      return parseInt(i.week);
+    });
     return Game.sessions.update({
       _id: docId
     }, doc);
@@ -58,7 +65,7 @@ Meteor.methods({
   resumeallgames: function(sessionNumber) {
     check(sessionNumber, String);
     let session = Game.sessions.findOne({
-      number: Number(sessionNumber)
+      key: Number(sessionNumber)
     });
 
     if (session) {
@@ -78,7 +85,7 @@ Meteor.methods({
   stopallgames: function(sessionNumber) {
     check(sessionNumber, String);
     let session = Game.sessions.findOne({
-      number: Number(sessionNumber)
+      key: Number(sessionNumber)
     });
 
     if (session) {
@@ -100,7 +107,7 @@ Meteor.methods({
     check(sessionnumber, String);
     if (Meteor.userId) {
       let gameSession = Game.sessions.findOne({
-        number: Number(sessionnumber)
+        key: Number(sessionnumber)
       });
 
       if (gameSession && gameSession._id) {

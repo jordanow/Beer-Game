@@ -13,7 +13,7 @@ Game.players.deny({
 });
 
 let schema = new SimpleSchema({
-  number: {
+  key: {
     type: Number,
     autoValue: function() {
       if (this.isInsert) {

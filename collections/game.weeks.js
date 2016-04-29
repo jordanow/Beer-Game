@@ -25,7 +25,7 @@ let gameweeksschema = new SimpleSchema({
   'player.role': {
     type: String
   },
-  'player.number': {
+  'player.key': {
     type: Number
   },
   'week': {

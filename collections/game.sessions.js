@@ -90,7 +90,7 @@ gamesettingsschema = new SimpleSchema({
 });
 
 let schema = new SimpleSchema({
-  number: {
+  key: {
     type: Number,
     autoValue: function() {
       if (this.isInsert) {
@@ -126,9 +126,9 @@ Game.sessions.attachSchema(schema);
 
 Game.sessions.helpers({
   fullName() {
-    return (this.name ? this.name + ' - ' + this.number : 'Session ' + this.number);
+    return (this.name ? this.name + ' - ' + this.key : 'Session ' + this.key);
   },
   shortName() {
-    return this.name ? this.name : 'Session ' + this.number
+    return this.name ? this.name : 'Session ' + this.key
   }
 });

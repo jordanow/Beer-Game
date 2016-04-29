@@ -5,7 +5,7 @@ Template.sessionSettings.onCreated(function() {
 Template.sessionSettings.helpers({
   session: function() {
     return Game.sessions.findOne({
-      number: Number(FlowRouter.getParam('sessionNumber'))
+      key: Number(FlowRouter.getParam('sessionNumber'))
     });
   }
 });

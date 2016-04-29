@@ -27,7 +27,7 @@ let InstanceRoleSchema = new SimpleSchema({
     type: String,
     optional: true
   },
-  'player.number': {
+  'player.key': {
     type: Number,
     optional: true
   },
