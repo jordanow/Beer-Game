@@ -97,13 +97,15 @@
         </table>
       </div>
       {{#if canstopgames}}
-      <button type="button" class="btn btn-default stopallgames pull-right">
-      <i class="fa fa-stop fa-lg"></i> Stop all games
-      </button>
+      <button type="button" class="btn btn-success pull-left" disabled="true">
+      <i class="fa fa-play-circle fa-lg"></i> Resume all games</button>
+      <button type="button" class="btn btn-danger stopallgames pull-right">
+      <i class="fa fa-stop fa-lg"></i> Stop all games</button>
       {{else}}
-      <button type="button" class="btn btn-default pull-right" disabled="true">
-      <i class="fa fa-stop fa-lg"></i> Stop all games
-      </button>
+      <button type="button" class="btn btn-success resumeallgames pull-left">
+      <i class="fa fa-play-circle fa-lg"></i> Resume all games</button>
+      <button type="button" class="btn btn-danger pull-right" disabled="true">
+      <i class="fa fa-stop fa-lg"></i> Stop all games</button>
       {{/if}}
     </div>
     {{/if}}

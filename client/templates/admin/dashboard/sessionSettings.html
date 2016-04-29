@@ -20,8 +20,30 @@
                   {{> afQuickField name="settings.cost.inventory" }}
                   {{> afQuickField name="settings.cost.backorder" }}
                   {{> afQuickField name="settings.delay" }}
-                  {{> afQuickField name="settings.customerdemand" }}
                   <div>
+                    {{#afEachArrayItem name="settings.customerdemand" minCount=this.atts.minCount maxCount=this.atts.maxCount}}
+                    <div class="row">
+                      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        {{> afQuickField name=this.current.week}}
+                      </div>
+                      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        {{> afQuickField name=this.current.value}}
+                      </div>
+                      <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+                        <br/>
+                        {{#if afArrayFieldHasMoreThanMinimum name="settings.customerdemand" minCount=0 maxCount=''}}
+                        <button type="button" class="btn btn-primary autoform-remove-item"><i class="glyphicon glyphicon-minus"></i></button>
+                        {{/if}}
+                      </div>
+                    </div>
+                    {{/afEachArrayItem}}
+                    {{#if afArrayFieldHasLessThanMaximum name="settings.customerdemand" minCount=0 maxCount=''}}
+                    <button type="button" class="btn btn-primary autoform-add-item pull-left" data-autoform-field="settings.customerdemand" data-autoform-minCount="{{this.atts.minCount}}" data-autoform-maxCount="{{this.atts.maxCount}}"><span class="glyphicon glyphicon-plus"></span></button>
+                    {{/if}}
+                  </div>
+                  <div>
+                  <br/>
+                  <br/>
                     <button type="submit" class="btn btn-primary" disabled="{{disableButtons}}">Submit</button>
                     <button type="reset" class="btn btn-default" disabled="{{disableButtons}}">Reset changes</button>
                   </div>

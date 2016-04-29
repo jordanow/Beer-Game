@@ -12,6 +12,27 @@ Game.instances.deny({
   remove: () => true
 });
 
+let InstanceRoleSchema = new SimpleSchema({
+  week: {
+    type: Number,
+    min: 0,
+    optional: true
+  },
+  state: {
+    type: String,
+    allowedValues: ['available', 'joined'],
+    optional: true
+  },
+  'player._id': {
+    type: String,
+    optional: true
+  },
+  'player.number': {
+    type: Number,
+    optional: true
+  },
+});
+
 let schema = new SimpleSchema({
   key: {
     type: Number,
@@ -28,6 +49,22 @@ let schema = new SimpleSchema({
     type: String,
     allowedValues: ['play', 'closed'],
     defaultValue: 'play'
+  },
+  Retailer: {
+    type: InstanceRoleSchema,
+    optional: true
+  },
+  Wholesaler: {
+    type: InstanceRoleSchema,
+    optional: true
+  },
+  Distributor: {
+    type: InstanceRoleSchema,
+    optional: true
+  },
+  Manufacturer: {
+    type: InstanceRoleSchema,
+    optional: true
   },
   createdAt: {
     type: Date,

@@ -227,6 +227,14 @@
       e.preventDefault();
       Modal.show('sessionSettings');
     },
+    'click .resumeallgames': function(e) {
+      e.preventDefault();
+      Meteor.call('resumeallgames', FlowRouter.getParam('sessionNumber'), function(err) {
+        if (err) {
+          Bert.alert(err.message, 'danger');
+        }
+      });
+    },
     'click .stopallgames': function(e) {
       e.preventDefault();
       Modal.show('stopallgames');

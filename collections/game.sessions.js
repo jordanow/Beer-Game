@@ -12,6 +12,20 @@ Game.sessions.deny({
   remove: () => true
 });
 
+DemandSchema = new SimpleSchema({
+  week: {
+    type: Number,
+    label: 'Week',
+    min: 0,
+    max: 56
+  },
+  value: {
+    type: Number,
+    min: 0,
+    max: 999999
+  }
+});
+
 gamesettingsschema = new SimpleSchema({
   'initialinventory': {
     type: Number,
@@ -38,11 +52,9 @@ gamesettingsschema = new SimpleSchema({
     defaultValue: 4
   },
   'customerdemand': {
-    type: [Number],
+    type: [DemandSchema],
     minCount: 4,
     maxCount: 56,
-    min: 0,
-    max: 999999,
     label: 'Sample customer demand per week',
     optional: true
   },

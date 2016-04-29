@@ -1,31 +1,4 @@
 Meteor.methods({
-  addSession: function() {
-    let settings = Game.settings.findOne();
-    return Game.sessions.insert({
-      settings: settings
-    });
-  },
-  stopallgames: function(sessionNumber) {
-    check(sessionNumber, String);
-    let session = Game.sessions.findOne({
-      number: Number(sessionNumber)
-    });
-
-    if (session) {
-      return Game.instances.update({
-        state: 'play'
-      }, {
-        $set: {
-          state: 'closed'
-        }
-      }, {
-        multi: true
-      });
-    } else {
-      throw new Meteor.Error(403, 'Session not found');
-    }
-
-  },
   joingame: function(options) {
     check(options, {
       key: String,
@@ -261,54 +234,7 @@ Meteor.methods({
       success: player && player._id
     };
   },
-  createGames: function(options) {
-    //Check if the session exists
-    //If yes, create new games with same session id
-    //else throw error
-    check(options, {
-      session: Number,
-      numOfGames: Number
-    });
 
-    let session = Game.sessions.findOne({
-      number: options.session
-    });
-
-    if (session && session._id) {
-      for (let i = 0; i < options.numOfGames; i++) {
-        Game.instances.insert({
-          session: session._id
-        });
-      }
-      return {
-        success: true
-      };
-    } else {
-      throw new Meteor.Error(400, 'Session not found');
-    }
-
-
-  },
-  updateGameSettings: function(doc, docId) {
-    check(doc, Object);
-    check(docId, String);
-
-    return Game.settings.update({
-      _id: docId
-    }, doc);
-  },
-  updateSessionSettings: function(doc, docId) {
-    check(doc, Object);
-    check(docId, String);
-
-    doc.$set['settings.customerdemand'] = _.filter(doc.$set['settings.customerdemand'], function(i) {
-      return !!i;
-    });
-
-    return Game.sessions.update({
-      _id: docId
-    }, doc);
-  },
   allInSameWeek: function(gamekey) {
     if (Meteor.isServer) {
       check(gamekey, Match.Optional(String));

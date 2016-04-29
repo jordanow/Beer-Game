@@ -12,7 +12,7 @@ Template.dashboardOverview.helpers({
       sort: {
         createdAt: -1
       }
-    });
+    }).fetch();
   }
 });
 

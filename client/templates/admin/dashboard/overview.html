@@ -15,6 +15,7 @@
     </div>
   </div>
   <div class="row">
+    {{#if sessions.length}}
     <div class="col-xs-12 col-sm-8 col-md-8 col-lg-8 well">
       {{#if pageLoading}}
       {{>loading}}
@@ -25,6 +26,7 @@
         {{/each}}
       </div>
     </div>
+    {{/if}}
   </div>
 </div>
 </template>
