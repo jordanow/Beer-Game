@@ -98,7 +98,20 @@
               <td>{{this.key}}</td>
               <td>{{statehelper this.state}}</td>
               <td>
-                <button class="btn btn-default pull-left openchart" data-toggle="collapse" data-target="#chart"><i class="fa fa-line-chart"></i> Chart</button>
+                <button class="btn btn-default pull-left openchart"><i class="fa fa-line-chart"></i> Chart</button>
+              </td>
+              <td>
+                {{#if canstopgame this}}
+                <div class="btn-group btn-group-md" role="group">
+                  <button class="btn btn-default pull-left" disabled="true"><i class="fa fa-play"></i> Resume</button>
+                  <button class="btn btn-danger pull-left stopthisgame"><i class="fa fa-stop"></i> Stop</button>
+                </div>
+                {{else}}
+                <div class="btn-group btn-group-md" role="group">
+                  <button class="btn btn-default pull-left resumethisgame"><i class="fa fa-play"></i> Resume</button>
+                  <button class="btn btn-danger pull-left" disabled="true"><i class="fa fa-stop"></i> Stop</button>
+                </div>
+                {{/if}}
               </td>
             </tr>
             {{/each}}

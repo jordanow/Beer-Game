@@ -30,9 +30,7 @@ Template.playgame.onCreated(function() {
 
   self.nextMoveInterval = Meteor.setInterval(function() {
     Meteor.call('makeNextMove', FlowRouter.getParam('gamekey'), FlowRouter.getParam('playerkey'), function(err, res) {
-      console.log(err, res);
       if (res && res.success) {
-        console.log('here', res.success);
         self.allplayersin.set(true);
       }
     });
@@ -69,7 +67,11 @@ Template.playgame.helpers({
     let player = Game.players.findOne({
       key: Number(FlowRouter.getParam('playerkey'))
     });
-    if (player) {
+    let game = Game.instances.findOne({
+      key: Number(FlowRouter.getParam('gamekey')),
+      state: 'play'
+    });
+    if (player && player._id && game && game._id) {
       Template.instance().gameIsAvailable.set(true);
       return player;
     } else {
@@ -101,9 +103,7 @@ Template.playgame.events({
     options.instance = Number(FlowRouter.getParam('gamekey'));
     e.target.outOrder.value = '';
 
-    console.log(tpl.allplayersin.get());
     Meteor.call('submitOrder', options, function(err) {
-      console.log('hehehhe');
       tpl.allplayersin.set(false);
       if (err) {
         Bert.alert(err.message, 'danger');

@@ -1,4 +1,15 @@
 Meteor.methods({
+  updategamestate: function(instanceId, state) {
+    check(instanceId, String);
+    check(state, String)
+    return Game.instances.update({
+      _id: instanceId
+    }, {
+      $set: {
+        state: state
+      }
+    })
+  },
   createGames: function(options) {
     //Check if the session exists
     //If yes, create new games with same session id
@@ -37,9 +48,23 @@ Meteor.methods({
       return parseInt(i.week);
     });
 
-    return Game.settings.update({
-      _id: docId
-    }, doc);
+    let weeks = doc.$set['customerdemand'];
+    let weekValues = _.pluck(weeks, 'week');
+    let missingWeeks = [];
+
+    weekValues.forEach(function(week, index) {
+      if (week !== index + 1) {
+        missingWeeks.push(index + 1);
+      }
+    });
+
+    if (missingWeeks.length > 0) {
+      throw new Meteor.Error(403, 'Data for week ' + missingWeeks.join(',') + ' missing.')
+    } else {
+      return Game.settings.update({
+        _id: docId
+      }, doc);
+    }
   },
   updateSessionSettings: function(doc, docId) {
     check(doc, Object);
@@ -52,9 +77,23 @@ Meteor.methods({
     doc.$set['settings.customerdemand'] = _.sortBy(doc.$set['settings.customerdemand'], function(i) {
       return parseInt(i.week);
     });
-    return Game.sessions.update({
-      _id: docId
-    }, doc);
+
+    let weeks = doc.$set['settings.customerdemand'];
+    let weekValues = _.pluck(weeks, 'week');
+    let missingWeeks = [];
+
+    weekValues.forEach(function(week, index) {
+      if (week !== index + 1) {
+        missingWeeks.push(index + 1);
+      }
+    });
+    if (missingWeeks.length > 0) {
+      throw new Meteor.Error(403, 'Data for week ' + missingWeeks.join(',') + ' missing.')
+    } else {
+      return Game.sessions.update({
+        _id: docId
+      }, doc);
+    }
   },
   addSession: function() {
     let settings = Game.settings.findOne();

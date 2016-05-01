@@ -85,6 +85,9 @@
         return '?';
       }
     },
+    canstopgame: function(game) {
+      return game.state === 'play';
+    },
     bullwhipcart: function() {
       let roledemands = Template.instance().roledemands.get();
 
@@ -219,6 +222,14 @@
           Bert.alert(err.message, 'danger');
         }
       });
+    },
+    'click .resumethisgame': function(e) {
+      e.preventDefault();
+      Meteor.call('updategamestate', this._id, 'play');
+    },
+    'click .stopthisgame': function(e) {
+      e.preventDefault();
+      Modal.show('stopgame', this);
     },
     'click .stopallgames': function(e) {
       e.preventDefault();
