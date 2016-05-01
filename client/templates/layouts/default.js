@@ -8,22 +8,21 @@ const handleRedirect = (routes, redirect) => {
 
 Template.default.helpers({
   loggingIn() {
-      return Meteor.loggingIn();
-    },
-    authenticated() {
-      return !Meteor.loggingIn() && Meteor.user();
-    },
-    redirectAuthenticated() {
-      return handleRedirect([
-        'login',
-        'signup',
-        'recover-password',
-        'reset-password'
-      ], '/admin/overview');
-    },
-    redirectPublic() {
-      return handleRedirect([
-        'dashboardOverview'
-      ], '/login');
-    }
+    return Meteor.loggingIn();
+  },
+  authenticated() {
+    return !Meteor.loggingIn() && Meteor.user();
+  },
+  redirectAuthenticated() {
+    return handleRedirect([
+      'login',
+      'recover-password',
+      'reset-password'
+    ], '/admin/overview');
+  },
+  redirectPublic() {
+    return handleRedirect([
+      'dashboardOverview'
+    ], '/login');
+  }
 });
