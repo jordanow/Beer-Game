@@ -11,16 +11,6 @@
     let self = this;
 
     self.roledemands = new ReactiveVar([]);
-
-    Template.instance().autorun(function() {
-      let session = Game.sessions.findOne({
-        key: Number(FlowRouter.getParam('sessionNumber'))
-      });
-      if (session && session._id) {
-        Template.instance().weekdata = Meteor.subscribe('LastWeekPubs', session._id);
-      }
-    });
-
   });
 
   Template.sessionOverview.helpers({
@@ -66,50 +56,32 @@
       }
     },
     progressreports: function() {
-      let weeks = Game.weeks.find().fetch();
+      let instances = Game.instances.find().fetch();
 
-      return _.uniq(weeks, 'week', function(w) {
-        return w.week.toString();
-      });
+      return instances;
     },
-    currentweek: function(role) {
-      let currentweek = Game.weeks.findOne({
-        'player.role': role
-      }, {
-        sort: {
-          week: -1
-        }
+    currentweek: function(role, instanceId) {
+      let instance = Game.instances.findOne({
+        _id: instanceId
       });
 
-      if (currentweek && currentweek.week) {
-        return currentweek.week;
+
+      if (instance[role] && instance[role].week) {
+        return instance[role].week;
       } else {
         return 0;
       }
     },
-    playernumber: function(role) {
-      let currentweek = Game.weeks.findOne({
-        'player.role': role
-      }, {
-        sort: {
-          week: -1
-        }
-      });
-
-      if (currentweek && currentweek.player && currentweek.player.number) {
-        return currentweek.player.number;
-      } else {
-        return '?';
-      }
-    },
-    instancekey: function(instanceId) {
+    playernumber: function(role, instanceId) {
       let instance = Game.instances.findOne({
         _id: instanceId
       });
-      if (instance && instance.key) {
-        return instance.key;
+
+
+      if (instance[role] && instance[role].player && instance[role].player.key) {
+        return instance[role].player.key;
       } else {
-        return '-';
+        return '?';
       }
     },
     bullwhipcart: function() {
@@ -126,20 +98,20 @@
       });
 
       if (!!session && session.settings) {
-        customerdemand = session.settings.customerdemand;
+        customerdemand = _.pluck(session.settings.customerdemand, 'value');
       }
 
       if (roledemands.retailer) {
         retailerdemand = roledemands.retailer;
       }
       if (roledemands.wholesaler) {
-        retailerdemand = roledemands.wholesaler;
+        wholesalerdemand = roledemands.wholesaler;
       }
       if (roledemands.distributor) {
-        retailerdemand = roledemands.distributor;
+        distributordemand = roledemands.distributor;
       }
       if (roledemands.manufacturer) {
-        retailerdemand = roledemands.manufacturer;
+        manufacturerdemand = roledemands.manufacturer;
       }
 
       return {
@@ -255,7 +227,6 @@
     },
     'click .openchart': function(e, tpl) {
       let instance = this;
-
       Meteor.call('getChartData', instance._id, function(err, res) {
         if (res && res.success) {
           tpl.roledemands.set(res.data);

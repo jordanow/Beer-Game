@@ -90,4 +90,27 @@ let schema = new SimpleSchema({
   }
 });
 
+Game.instances.after.update(function(userId, doc) {
+  if (allInSameWeek(doc) && doc.state === 'play') {
+    addNewWeek(doc.key, doc.Retailer.player.key);
+    addNewWeek(doc.key, doc.Manufacturer.player.key);
+    addNewWeek(doc.key, doc.Distributor.player.key);
+    addNewWeek(doc.key, doc.Wholesaler.player.key);
+  }
+}, {
+  fetchPrevious: false
+});
+
 Game.instances.attachSchema(schema);
+
+let allInSameWeek = function(gameInstance) {
+  if (gameInstance.Retailer && !!gameInstance.Distributor && !!gameInstance.Manufacturer && !!gameInstance.Wholesaler) {
+    if (gameInstance.Retailer.week === gameInstance.Distributor.week && gameInstance.Manufacturer.week === gameInstance.Wholesaler.week && gameInstance.Retailer.week === gameInstance.Wholesaler.week) {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+};

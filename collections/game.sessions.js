@@ -16,7 +16,7 @@ DemandSchema = new SimpleSchema({
   week: {
     type: Number,
     label: 'Week',
-    min: 0,
+    min: 1,
     max: 56
   },
   value: {

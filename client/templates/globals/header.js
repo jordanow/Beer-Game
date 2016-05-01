@@ -10,6 +10,7 @@ Template.header.events({
       if (error) {
         Bert.alert(error.reason, 'warning');
       } else {
+        FlowRouter.go('/');
         Bert.alert('Logged out!', 'success');
       }
     });

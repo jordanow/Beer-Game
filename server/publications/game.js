@@ -56,21 +56,9 @@ Meteor.publish('Game.weeks', function(playerkey) {
     check(playerkey, String);
   }
   let q = {
-    player: {
-      _id: null,
-      role: null
-    }
+    'player.key': Number(playerkey)
   };
 
-  if (playerkey) {
-    let player = Game.players.findOne({
-      key: Number(playerkey)
-    });
-    if (!!player && !!player._id) {
-      q.player._id = player._id;
-      q.player.role = player.role;
-    }
-  }
   return Game.weeks.find(q);
 });
 

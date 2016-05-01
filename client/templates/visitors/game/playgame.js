@@ -32,7 +32,7 @@ Template.playgame.onCreated(function() {
     Meteor.call('makeNextMove', FlowRouter.getParam('gamekey'), FlowRouter.getParam('playerkey'), function(err, res) {
       if (res && res.success) {
         self.allplayersin.set(true);
-        Meteor.clearInterval(self.nextMoveInterval);
+        //Meteor.clearInterval(self.nextMoveInterval);
       }
     });
   }, 2000);
@@ -96,12 +96,8 @@ Template.playgame.events({
     e.preventDefault();
     let options = {};
     options.outOrder = Number(e.target.outOrder.value) || 0;
-    options.player = Game.players.findOne({
-      key: Number(FlowRouter.getParam('playerkey'))
-    });
-    options.instance = Game.instances.findOne({
-      key: Number(FlowRouter.getParam('gamekey'))
-    });
+    options.player = Number(FlowRouter.getParam('playerkey'));
+    options.instance = Number(FlowRouter.getParam('gamekey'));
     e.target.outOrder.value = '';
 
     Meteor.call('submitOrder', options, function(err) {

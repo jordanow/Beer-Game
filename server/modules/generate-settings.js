@@ -17,9 +17,6 @@ let generateSettings = () => {
       },
       delay: 2,
       customerdemand: [{
-        week: 0,
-        value: 2
-      }, {
         week: 1,
         value: 2
       }, {

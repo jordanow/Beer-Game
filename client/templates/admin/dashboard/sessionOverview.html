@@ -52,18 +52,18 @@
             <tbody>
               {{#each progressreports}}
               <tr>
-                <td>{{instancekey this.game.instance}}</td>
+                <td>{{this.key}}</td>
                 <td>
-                  Week {{currentweek 'Retailer'}}<br/>Key {{playernumber 'Retailer'}}
+                  Week {{currentweek 'Retailer' this._id}}<br/>Key {{playernumber 'Retailer' this._id}}
                 </td>
                 <td>
-                  Week {{currentweek 'Retailer'}}<br/>Key {{playernumber 'Wholesaler'}}
+                  Week {{currentweek 'Wholesaler' this._id}}<br/>Key {{playernumber 'Wholesaler' this._id}}
                 </td>
                 <td>
-                  Week {{currentweek 'Retailer'}}<br/>Key {{playernumber 'Distributor'}}
+                  Week {{currentweek 'Distributor' this._id}}<br/>Key {{playernumber 'Distributor' this._id}}
                 </td>
                 <td>
-                  Week {{currentweek 'Retailer'}}<br/>Key {{playernumber 'Manufacturer'}}
+                  Week {{currentweek 'Manufacturer' this._id}}<br/>Key {{playernumber 'Manufacturer' this._id}}
                 </td>
               </tr>
               {{/each}}
