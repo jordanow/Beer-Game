@@ -67,7 +67,7 @@
       });
 
 
-      if (instance[role] && instance[role].week) {
+      if (instance && instance[role] && instance[role].week) {
         return instance[role].week;
       } else {
         return 0;
@@ -79,7 +79,7 @@
       });
 
 
-      if (instance[role] && instance[role].player && instance[role].player.key) {
+      if (instance && instance[role] && instance[role].player && instance[role].player.key) {
         return instance[role].player.key;
       } else {
         return '?';
