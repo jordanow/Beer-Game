@@ -10,6 +10,7 @@
     Template.instance().subscribe = Meteor.subscribe('Game.instances');
     let self = this;
 
+    self.chartHeight = new ReactiveVar(300);
     self.roledemands = new ReactiveVar([]);
   });
 
@@ -117,7 +118,7 @@
       return {
         chart: {
           type: 'line',
-          height: 300,
+          height: Template.instance().chartHeight.get() || 300,
           marginBottom: 100
         },
         title: {
@@ -191,6 +192,18 @@
   });
 
   Template.sessionOverview.events({
+    'click .incChartHeight': function(e, tpl) {
+      e.preventDefault();
+      let height = tpl.chartHeight.get();
+      tpl.chartHeight.set(height + 50);
+    },
+    'click .decChartHeight': function(e, tpl) {
+      e.preventDefault();
+      let height = tpl.chartHeight.get();
+      if (height >= 300) {
+        tpl.chartHeight.set(height - 50);
+      }
+    },
     'click .modal-create-games': function(e) {
       e.preventDefault();
       Modal.show('createGames');

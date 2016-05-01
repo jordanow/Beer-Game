@@ -30,9 +30,10 @@ Template.playgame.onCreated(function() {
 
   self.nextMoveInterval = Meteor.setInterval(function() {
     Meteor.call('makeNextMove', FlowRouter.getParam('gamekey'), FlowRouter.getParam('playerkey'), function(err, res) {
+      console.log(err, res);
       if (res && res.success) {
+        console.log('here', res.success);
         self.allplayersin.set(true);
-        //Meteor.clearInterval(self.nextMoveInterval);
       }
     });
   }, 2000);
@@ -100,11 +101,12 @@ Template.playgame.events({
     options.instance = Number(FlowRouter.getParam('gamekey'));
     e.target.outOrder.value = '';
 
+    console.log(tpl.allplayersin.get());
     Meteor.call('submitOrder', options, function(err) {
+      console.log('hehehhe');
+      tpl.allplayersin.set(false);
       if (err) {
         Bert.alert(err.message, 'danger');
-      } else {
-        tpl.allplayersin.set(false);
       }
     });
   }

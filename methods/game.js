@@ -218,14 +218,14 @@ Meteor.methods({
 				}, {
 					$set: week
 				});
+				if (!!update) {
+					return updateRoleInInstance(gameInstance, player, currentWeek);
+
+				} else {
+					throw new Meteor.Error(403, 'Something went wrong while submitting order!');
+				}
 			} else {
 				throw new Meteor.Error(403, 'Please wait for your turn!');
-			}
-			if (!!update) {
-				return updateRoleInInstance(gameInstance, player, currentWeek);
-
-			} else {
-				throw new Meteor.Error(403, 'Something went wrong while submitting order!');
 			}
 		}
 	},
