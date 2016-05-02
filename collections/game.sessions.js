@@ -32,7 +32,6 @@ gamesettingsschema = new SimpleSchema({
     label: 'Initial level of inventory',
     min: 0,
     max: 999999,
-    decimal: true,
     defaultValue: 15
   },
   'cost.inventory': {
@@ -40,7 +39,6 @@ gamesettingsschema = new SimpleSchema({
     label: 'Cost of inventory',
     min: 0,
     max: 999999,
-    decimal: true,
     defaultValue: 4
   },
   'cost.backorder': {
@@ -48,7 +46,6 @@ gamesettingsschema = new SimpleSchema({
     label: 'Cost of backorder',
     min: 0,
     max: 999999,
-    decimal: true,
     defaultValue: 4
   },
   'customerdemand': {

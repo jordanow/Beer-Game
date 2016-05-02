@@ -236,18 +236,20 @@ Meteor.methods({
 		if (Meteor.isServer) {
 			if (!!gamekey && !!playerkey) {
 				if (isValidGameKey(gamekey)) {
+					let gameWeek = gameCurrentWeek(gamekey);
+					let instance = Game.instances.findOne({
+						key: Number(gamekey)
+					});
+					let player = Game.players.findOne({
+						key: Number(playerkey)
+					});
+
+					let myWeek = instance[player.role].week;
+
 					return {
-						success: allInSameWeek(gamekey)
+						success: allInSameWeek(gamekey),
+						weekSameAsOthers: myWeek === gameWeek
 					};
-					// if (allInSameWeek(gamekey)) {
-					// 	return {
-					// 		success: addNewWeek(gamekey, playerkey)
-					// 	};
-					// } else {
-					// 	return {
-					// 		success: false
-					// 	};
-					// }
 				} else {
 					return {
 						success: false,
@@ -304,44 +306,52 @@ addNewWeek = function(gamekey, playerkey) {
 			week: thisWeek
 		});
 
-		//New order must be created only if the previous weeks order was submitted
-		let inDelivery = getIncomingDelivery(player, gameSession, gameInstance);
-		let inOrder = getIncomingOrder(player, gameSession, gameInstance);
+		let nextWeek = Game.weeks.findOne({
+			'player._id': player._id,
+			week: thisWeek + 1
+		});
 
-		let availableInventory = currentWeek.inventory + inDelivery;
-		let toShip = currentWeek.backorder + inOrder;
-		let outDelivery = toShip > availableInventory ? availableInventory : toShip;
-		let backorder = toShip - outDelivery;
+		if (!nextWeek) {
 
-		let currentInventory = availableInventory - outDelivery;
-		let currentBackorder = backorder;
+			//New order must be created only if the previous weeks order was submitted
+			let inDelivery = getIncomingDelivery(player, gameSession, gameInstance);
+			let inOrder = getIncomingOrder(player, gameSession, gameInstance);
 
-		let cost = calculateCostForWeek(gameSession.settings, currentBackorder, currentInventory, currentWeek.cost);
+			let availableInventory = currentWeek.inventory + inDelivery;
+			let toShip = currentWeek.backorder + inOrder;
+			let outDelivery = toShip > availableInventory ? availableInventory : toShip;
+			let backorder = toShip - outDelivery;
 
-		let week = {
-			week: thisWeek + 1,
-			cost: cost,
-			delivery: {
-				"in": inDelivery,
-				"out": outDelivery
-			},
-			order: {
-				"in": inOrder
-			},
-			backorder: currentBackorder,
-			inventory: currentInventory,
-			game: {
-				instance: gameInstance._id,
-				session: gameInstance.session
-			},
-			player: {
-				_id: player._id,
-				role: player.role,
-				key: player.key
-			}
-		};
+			let currentInventory = availableInventory - outDelivery;
+			let currentBackorder = backorder;
 
-		return Game.weeks.insert(week);
+			let cost = calculateCostForWeek(gameSession.settings, currentBackorder, currentInventory, currentWeek.cost);
+
+			let week = {
+				week: thisWeek + 1,
+				cost: cost,
+				delivery: {
+					"in": inDelivery,
+					"out": outDelivery
+				},
+				order: {
+					"in": inOrder
+				},
+				backorder: currentBackorder,
+				inventory: currentInventory,
+				game: {
+					instance: gameInstance._id,
+					session: gameInstance.session
+				},
+				player: {
+					_id: player._id,
+					role: player.role,
+					key: player.key
+				}
+			};
+
+			return Game.weeks.insert(week);
+		}
 	}
 
 };
@@ -481,6 +491,22 @@ allInSameWeek = function(gamekey) {
 
 };
 
+let gameCurrentWeek = function(gamekey) {
+	let gameInstance = Game.instances.findOne({
+		key: Number(gamekey),
+		state: 'play'
+	});
+
+	if (gameInstance.Retailer && !!gameInstance.Distributor && !!gameInstance.Manufacturer && !!gameInstance.Wholesaler) {
+		let weeks = [gameInstance.Retailer.week, gameInstance.Distributor.week, gameInstance.Manufacturer.week, gameInstance.Wholesaler.week];
+		weeks = weeks.sort();
+		return weeks[0];
+	} else {
+		return 0;
+	}
+
+};
+
 getCustomerDemand = function(session, week) {
 	let demandArr = session.settings.customerdemand;
 	let demand = 0;
@@ -531,7 +557,7 @@ let getAvailablePositions = function(gamekey) {
 		state: 'play'
 	});
 
-	let positionsAvailable = ['Retailer', 'Manufacturer', 'Wholesaler', 'Distributor'];
+	let positionsAvailable = ['Retailer', 'Wholesaler', 'Distributor', 'Manufacturer'];
 	let positionsTaken = [];
 
 	positionsAvailable.forEach(function(position) {

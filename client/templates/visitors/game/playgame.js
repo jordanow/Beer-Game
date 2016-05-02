@@ -33,6 +33,9 @@ Template.playgame.onCreated(function() {
       if (res && res.success) {
         self.allplayersin.set(true);
       }
+      if (res && !res.weekSameAsOthers) {
+        self.timeRemaining.set(200);
+      }
     });
   }, 2000);
 
@@ -98,16 +101,20 @@ Template.playgame.events({
   'submit .orderOfThisWeek': function(e, tpl) {
     e.preventDefault();
     let options = {};
-    options.outOrder = Number(e.target.outOrder.value) || 0;
-    options.player = Number(FlowRouter.getParam('playerkey'));
-    options.instance = Number(FlowRouter.getParam('gamekey'));
-    e.target.outOrder.value = '';
+    if (!e.target.outOrder.value || isNaN(Number(e.target.outOrder.value))) {
+      Bert.alert('Out order must be a positive integer');
+    } else {
+      options.outOrder = Number(e.target.outOrder.value);
+      options.player = Number(FlowRouter.getParam('playerkey'));
+      options.instance = Number(FlowRouter.getParam('gamekey'));
+      e.target.outOrder.value = '';
 
-    Meteor.call('submitOrder', options, function(err) {
-      tpl.allplayersin.set(false);
-      if (err) {
-        Bert.alert(err.message, 'danger');
-      }
-    });
+      Meteor.call('submitOrder', options, function(err) {
+        tpl.allplayersin.set(false);
+        if (err) {
+          Bert.alert(err.message, 'danger');
+        }
+      });
+    }
   }
 });

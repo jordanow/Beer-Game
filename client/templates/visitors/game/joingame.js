@@ -2,7 +2,7 @@ Template.joingame.onCreated(function() {
   let self = this;
   this.subscribe = Meteor.subscribe('Game.instances');
   this.subscribe = Meteor.subscribe('Game.sessions');
-  self.positions = new ReactiveVar(['Retailer', 'Manufacturer', 'Wholesaler', 'Distributor']);
+  self.positions = new ReactiveVar(['Retailer', 'Wholesaler', 'Distributor', 'Manufacturer']);
 });
 
 Template.joingame.helpers({
