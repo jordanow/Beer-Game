@@ -75,6 +75,11 @@
             <button class="btn btn-sm"><i class="fa fa-plus incChartHeight"></i></button>
             <button class="btn btn-sm"><i class="fa fa-minus decChartHeight"></i></button>
           </div>
+
+          <div class="btn-group btn-group-sm pull-right" role="group">
+            <button class="btn btn-sm btn-success toggleChartVar" id="orders" value="orders">Orders</button>
+            <button class="btn btn-sm toggleChartVar" id="cost" value="cost">Cost</button>
+          </div>
         </li>
         <li class="list-group-item">
           {{> highchartsHelper chartId="bullwhipcart" chartObject=bullwhipcart}}
@@ -98,7 +103,7 @@
               <td>{{this.key}}</td>
               <td>{{statehelper this.state}}</td>
               <td>
-                <button class="btn btn-default pull-left openchart"><i class="fa fa-line-chart"></i> Chart</button>
+                <button class="btn btn-default pull-left openchart" id="{{this.key}}"><i class="fa fa-line-chart"></i> Chart</button>
               </td>
               <td>
                 {{#if canstopgame this}}

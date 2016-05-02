@@ -12,6 +12,8 @@
 
     self.chartHeight = new ReactiveVar(300);
     self.roledemands = new ReactiveVar([]);
+    self.chartRefVar = new ReactiveVar('orders');
+    self.selectedChartInstance = new ReactiveVar();
   });
 
   Template.sessionOverview.helpers({
@@ -118,6 +120,32 @@
         manufacturerdemand = roledemands.manufacturer;
       }
 
+
+      let series = [{
+        name: 'Retailers',
+        data: retailerdemand
+      }, {
+        name: "Wholesalers",
+        data: wholesalerdemand
+      }, {
+        name: 'Distributor',
+        data: distributordemand
+      }, {
+        name: 'Manufacturer',
+        data: manufacturerdemand
+      }];
+
+      let chartRefVar = Template.instance().chartRefVar.get();
+
+      if (chartRefVar === 'orders') {
+        series.push({
+          name: 'Customers',
+          data: customerdemand
+        });
+      }
+
+      let gamekey = Template.instance().selectedChartInstance.get();
+
       return {
         chart: {
           type: 'line',
@@ -125,10 +153,10 @@
           marginBottom: 100
         },
         title: {
-          text: 'Bull whip effect'
+          text: !gamekey ? 'Bull whip effect' : 'Bull whip effect for game ' + gamekey
         },
         subtitle: {
-          text: 'Growth in orders per week'
+          text: chartRefVar === 'orders' ? 'Growth in orders over weeks' : 'Growth in costs over weeks'
         },
         xAxis: {
           min: 0,
@@ -139,7 +167,7 @@
         yAxis: {
           min: 0,
           title: {
-            text: 'Orders',
+            text: chartRefVar === 'orders' ? 'Orders' : 'Costs',
           },
           labels: {
             overflow: 'justify'
@@ -174,27 +202,32 @@
         credits: {
           enabled: false
         },
-        series: [{
-          name: 'Customers',
-          data: customerdemand
-        }, {
-          name: 'Retailers',
-          data: retailerdemand
-        }, {
-          name: "Wholesalers",
-          data: wholesalerdemand
-        }, {
-          name: 'Distributor',
-          data: distributordemand
-        }, {
-          name: 'Manufacturer',
-          data: manufacturerdemand
-        }]
+        series: series
       };
     }
   });
 
   Template.sessionOverview.events({
+    'click .toggleChartVar': function(e, tpl) {
+      e.preventDefault();
+
+      switch (e.target.value) {
+        case 'orders':
+          $('#orders').addClass('btn-success');
+          $('#cost').removeClass('btn-success');
+          break;
+        case 'cost':
+          $('#orders').removeClass('btn-success');
+          $('#cost').addClass('btn-success');
+          break;
+      }
+
+      tpl.chartRefVar.set(e.target.value);
+      let gamekey = tpl.selectedChartInstance.get();
+      if (!!gamekey) {
+        $('#' + gamekey).click();
+      }
+    },
     'click .incChartHeight': function(e, tpl) {
       e.preventDefault();
       let height = tpl.chartHeight.get();
@@ -251,10 +284,14 @@
     },
     'click .openchart': function(e, tpl) {
       let instance = this;
-      Meteor.call('getChartData', instance._id, function(err, res) {
-        if (res && res.success) {
-          tpl.roledemands.set(res.data);
-        }
-      });
+      if (!!instance) {
+        tpl.selectedChartInstance.set(instance.key);
+        let chartRefVar = tpl.chartRefVar.get();
+        Meteor.call('getChartData', instance._id, chartRefVar, function(err, res) {
+          if (res && res.success) {
+            tpl.roledemands.set(res.data);
+          }
+        });
+      }
     }
   });

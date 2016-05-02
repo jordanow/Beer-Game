@@ -177,8 +177,9 @@ Meteor.methods({
       return;
     }
   },
-  getChartData: function(instanceId) {
+  getChartData: function(instanceId, refVar) {
     check(instanceId, String);
+    check(refVar, String);
 
     if (Meteor.userId && Meteor.isServer) {
       let response = {
@@ -191,10 +192,17 @@ Meteor.methods({
         }
       };
 
-      response.data.retailer = getRoleDemand('Retailer', instanceId);
-      response.data.wholesaler = getRoleDemand('Wholesaler', instanceId);
-      response.data.distributor = getRoleDemand('Distributor', instanceId);
-      response.data.manufacturer = getRoleDemand('Manufacturer', instanceId);
+      if (refVar === 'order') {
+        response.data.retailer = getRoleDemand('Retailer', instanceId);
+        response.data.wholesaler = getRoleDemand('Wholesaler', instanceId);
+        response.data.distributor = getRoleDemand('Distributor', instanceId);
+        response.data.manufacturer = getRoleDemand('Manufacturer', instanceId);
+      } else {
+        response.data.retailer = getRoleCost('Retailer', instanceId);
+        response.data.wholesaler = getRoleCost('Wholesaler', instanceId);
+        response.data.distributor = getRoleCost('Distributor', instanceId);
+        response.data.manufacturer = getRoleCost('Manufacturer', instanceId);
+      }
 
       return response;
 
@@ -203,6 +211,26 @@ Meteor.methods({
     }
   }
 });
+
+let getRoleCost = function(role, instanceId) {
+  let games = Game.weeks.find({
+    'player.role': role,
+    'game.instance': instanceId
+  }).fetch();
+
+  if (games && games.length > 0) {
+    let costs = [];
+
+    games.forEach(function(game) {
+      if (!!game.cost)
+        costs.push(game.cost);
+    });
+
+    return costs;
+  } else {
+    return [];
+  }
+};
 
 let getRoleDemand = function(role, instanceId) {
   let games = Game.weeks.find({
