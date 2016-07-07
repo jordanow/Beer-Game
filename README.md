@@ -22,5 +22,7 @@ A fun game to understand the basics of supply chain management
 - Each unit of beer sold will bring $4<sup>*</sup> in profits.
 
 
-## Note
-- <sup>*</sup> Configurable
+## How to setup the app
+- Install [NodeJS](https://nodejs.org/en/download/)
+- Install [MeteorJS](https://www.meteor.com/install)
+- `npm start`
